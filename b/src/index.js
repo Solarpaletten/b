@@ -5,6 +5,7 @@ const compression = require('compression');
 const { logger } = require('./config/logger');
 const prismaManager = require('./utils/create/prismaManager');
 
+
 // Импорт всех маршрутов из единой директории
 const authRoutes = require('./routes/authRoutes');
 const clientsRoutes = require('./routes/clientsRoutes');

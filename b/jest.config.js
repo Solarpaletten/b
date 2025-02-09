@@ -1,11 +1,7 @@
 module.exports = {
-  setupFiles: ['<rootDir>/tests/setup.js'],
-  testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
-  collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/tests/**',
-    '!**/node_modules/**'
-  ],
-  coverageDirectory: 'coverage'
+  setupFilesAfterEnv: ['src/tests/setup.js'],
+eset: 'ts-jest',
+  Test: 'node',
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  testMatch: ['<rootDir>/tests/**/*.test.js']
 };
