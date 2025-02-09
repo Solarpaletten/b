@@ -1,0 +1,67 @@
+name: SOLAR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Backend (`b`)
+      - name: Install b
+        run: npm install
+        working-directory: ./b
+
+      - name: Run b
+        run: npm test
+        working-directory: ./b
+
+      # Frontend (`f`)
+      - name: Install f
+        run: npm install
+        working-directory: ./f
+
+      - name: Run f
+        run: npm test
+        working-directory: ./f
+
+      - name: Build f
+        run: npm run build
+        working-directory: ./f
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Backend deployment
+      - name: Deploy Backend to Render
+        env:
+          RENDER_API_KEY_BACKEND: ${{ secrets.RENDER_API_KEY_B }}
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer $RENDER_API_KEY_BACKEND" \
+            https://api.render.com/v1/services/srv-cse013jv2p9s73b2i760/deploys
+
+      # Frontend deployment
+      - name: Deploy Frontend to Render
+        env:
+          RENDER_API_KEY_FRONTEND: ${{ secrets.RENDER_API_KEY_F }}
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer $RENDER_API_KEY_FRONTEND" \
+            https://api.render.com/v1/services/srv-cu234ldds78s738eh6ug/deploys
