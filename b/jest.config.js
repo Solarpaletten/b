@@ -1,16 +1,5 @@
 module.exports = {
-  setupFiles: ['<rootDir>/tests/setup.js'],
-  testEnvironment: 'node',
-  testMatch: ['**/tests/**/*.test.js'],
-  collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/tests/**',
-    '!**/node_modules/**'
-  ],
-  coverageDirectory: 'coverage',
-  testTimeout: 30000,
-  verbose: true,
-  clearMocks: true,
-  detectOpenHandles: true,
-  forceExit: true
+  testEnvironment: 'node',               // Среда выполнения тестов (Node.js)
+  setupFilesAfterEnv: ['./tests/setup.js'], // Указать путь до setup-файла
+  testMatch: ['**/tests/**/*.test.js'],   // Паттерн поиска тестов
 };
