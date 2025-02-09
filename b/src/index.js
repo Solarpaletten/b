@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 // API маршруты
 const apiRouter = express.Router();
 apiRouter.use('/auth', authRoutes);
-apiRouter.use('/clients', clientsRoutes);
+apiRouter.use('/stats/clients', clientsRoutes);
 apiRouter.use('/stats', statsRoutes);
 app.use('/api', apiRouter);
 
