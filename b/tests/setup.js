@@ -2,7 +2,6 @@
 const { PrismaClient } = require('@prisma/client');
 const app = require('../src/app');
 const request = require('supertest');
-const { beforeAll, afterAll, beforeEach } = require('@jest/globals');
 const { jest, beforeAll, afterAll, beforeEach } = require('@jest/globals');
 
 const prisma = new PrismaClient();
