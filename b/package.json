@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "description": "Backend API",
   "main": "src/index.js",
+  "jest": {
+    "setupFiles": ["<rootDir>/tests/setup.js"]
+  },
   "scripts": {
     "prepare": "husky install",
     "prisma:format": "prisma format",

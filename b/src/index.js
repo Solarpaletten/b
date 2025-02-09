@@ -218,4 +218,13 @@ process.on('SIGTERM', async () => {
     process.exit(0);
 });
 
+if (process.env.NODE_ENV !== 'test') {
+    for (const envVar of requiredEnvVars) {
+        if (!process.env[envVar]) {
+            logger.error(`Missing required environment variable: ${envVar}`);
+            process.exit(1);
+        }
+    }
+}
+
 module.exports = app;
