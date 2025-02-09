@@ -1,17 +1,13 @@
 // tests/setup.js
 const { PrismaClient } = require('@prisma/client');
-const app = require('../src/app');
-const request = require('supertest');
+require('dotenv').config({ path: '.env.test' });
 const { beforeAll, afterAll, beforeEach } = require('@jest/globals');
 
-const prisma = new PrismaClient();
+global.beforeAll = beforeAll;
+global.afterAll = afterAll;
+global.beforeEach = beforeEach;
 
-// Не запускаем сервер во время тестов
-jest.mock('../src/app', () => {
-  const express = require('express');
-  const app = express();
-  return app;
-});
+const prisma = new PrismaClient();
 
 beforeAll(async () => {
   await prisma.$connect();
