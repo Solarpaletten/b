@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  admin
+  user
+  manager
+}
+
+enum ClientRole {
+  CLIENT
+  SUPPLIER
+}
+
+enum currency {
+  EUR
+  USD
+}
+
+enum warehouse_status {
+  Active
+  Inactive
+}
+
+
+model users {
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  username            String
+  password_hash       String
+  role                UserRole  @default(user) // user, admin, manager
+  status              String    @default("active")
+  email_verified      Boolean   @default(false)
+  verification_token  String?
+  token_expires       DateTime?
+  reset_token         String?   @unique
+  reset_token_expires DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  clients                     clients[]
+  purchases                   purchases[]
+  sales                       sales[]
+  bank_operations            bank_operations[]
+  chart_of_accounts          chart_of_accounts[]
+  products                   products[]
+  warehouses_as_user         warehouses[] @relation("warehouses_user")
+  warehouses_as_responsible  warehouses[] @relation("warehouses_responsible_person")
+  doc_settlements            doc_settlement[]
+
+  @@index([email], map: "idx_users_email") // email
+  @@index([role], map: "idx_users_role") 
+}
+
+model clients {
+  id           Int             @id @default(autoincrement())
+  name         String          @db.VarChar(100)
+  email        String          @db.VarChar(100)
+  phone        String?         @db.VarChar(20)
+  role         ClientRole      @default(CLIENT) // CLIENT, SUPPLIER
+  is_active    Boolean?        @default(true)
+  code         String?         @db.VarChar(50)
+  vat_code     String?         @db.VarChar(50)
+  user_id      Int
+  created_at   DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?       @default(now()) @db.Timestamp(6)
+
+  // Связи с правильными названиями моделей
+  users            users             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  purchases        purchases[]
+  sales           sales[]
+  warehouses      warehouses[]
+  doc_settlements doc_settlement[]
+  bank_operations bank_operations[]
+
+  @@index([created_at])
+  @@index([role]) 
+  @@index([is_active])
+}
+
+model sales {
+  id              Int       @id @default(autoincrement())
+  doc_number      String    @db.VarChar(50)
+  doc_date        DateTime  @db.Date
+  sale_date       DateTime? @db.Date
+  user_id         Int
+  client_id       Int
+  warehouse_id    Int      
+  total_amount    Decimal   @db.Decimal(10,2)
+  currency        currency  @default(EUR)
+  status          String    @default("draft") @db.VarChar(20)
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+  invoice_type    String?   @db.VarChar(50)
+  invoice_number  String    @db.VarChar(50)
+  vat_rate        Decimal?  @db.Decimal(5,2)
+
+  // Связи
+  users          users      @relation(fields: [user_id], references: [id])
+  client         clients    @relation(fields: [client_id], references: [id])
+  warehouse      warehouses @relation(fields: [warehouse_id], references: [id])
+
+  @@index([doc_date])
+  @@index([client_id])
+  @@index([warehouse_id])
+  @@index([status])
+}
+
+model purchases {
+  id              Int       @id @default(autoincrement())
+  doc_number      String    @db.VarChar(50)
+  doc_date        DateTime  @db.Date
+  purchase_date   DateTime? @db.Date
+  user_id         Int
+  client_id       Int
+  warehouse_id    Int      
+  total_amount    Decimal   @db.Decimal(10,2)
+  currency        currency  @default(EUR)
+  status          String    @default("draft") @db.VarChar(20)
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+  invoice_type    String?   @db.VarChar(50)
+  invoice_number  String    @db.VarChar(50)
+  vat_rate        Decimal?  @db.Decimal(5,2)
+
+  // Связи
+  users          users      @relation(fields: [user_id], references: [id])
+  client         clients    @relation(fields: [client_id], references: [id])
+  warehouse      warehouses @relation(fields: [warehouse_id], references: [id])
+
+  @@index([doc_date])
+  @@index([client_id])
+  @@index([warehouse_id])
+  @@index([status])
+}
+
+model warehouses {
+  id                  Int              @id @default(autoincrement())
+  name                String           @db.VarChar(100)
+  code                String?          @db.VarChar(50)
+  address             String?          @db.VarChar(255)
+  status              warehouse_status @default(Active)
+  client_id           Int?
+  user_id             Int
+  responsible_person_id Int?
+  created_at          DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?        @default(now()) @db.Timestamp(6)
+
+  // Связи
+  users               users    @relation("warehouses_user", fields: [user_id], references: [id])
+  responsible_person  users?   @relation("warehouses_responsible_person", fields: [responsible_person_id], references: [id])
+  client              clients? @relation(fields: [client_id], references: [id])
+  sales               sales[]
+  purchases           purchases[]
+
+  @@index([status])
+  @@index([client_id])
+}
+
+model bank_operations {
+  id              Int       @id @default(autoincrement())
+  date            DateTime  @db.Date
+  description     String    @db.VarChar(255)
+  amount          Decimal   @db.Decimal(10,2)
+  type            String    @db.VarChar(20)  // debit/credit  
+  account_id      Int  
+  user_id         Int
+  client_id       Int?                      
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+
+  // Связи
+  users           users     @relation(fields: [user_id], references: [id])
+  client          clients?  @relation(fields: [client_id], references: [id])
+
+  @@index([date])
+  @@index([type])
+}
+
+model products {
+  id          Int       @id @default(autoincrement())
+  code        String    @db.VarChar(50)
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  unit        String    @db.VarChar(20)
+  price       Decimal   @db.Decimal(10,2)
+  currency    currency  @default(EUR)
+  is_active   Boolean   @default(true)
+  user_id     Int
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+
+  users       users     @relation(fields: [user_id], references: [id])
+
+  @@index([code])
+  @@index([is_active])
+}
+
+model chart_of_accounts {
+  id           Int       @id @default(autoincrement())
+  code         String    @db.VarChar(20)
+  name         String    @db.VarChar(255) 
+  type         String    @db.VarChar(50) 
+  account_type String    @db.VarChar(50) // asset, liability, equity, revenue, expense
+  parent_code  String?   @db.VarChar(20)
+  is_active    Boolean   @default(true)
+  user_id      Int
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @default(now()) @db.Timestamp(6)
+
+  users        users     @relation(fields: [user_id], references: [id])
+
+  @@index([code])
+  @@index([type])
+  @@index([is_active])
+}
+
+model doc_settlement {
+  id           Int       @id @default(autoincrement())
+  doc_number   String    @db.VarChar(50)
+  doc_date     DateTime  @db.Date
+  client_id    Int
+  status       String    @default("draft") @db.VarChar(20)
+  amount       Decimal   @db.Decimal(10,2)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @default(now()) @db.Timestamp(6)
+  period_start DateTime  @db.Date
+  period_end   DateTime  @db.Date
+  user_id      Int
+
+  // Связи
+  client       clients   @relation(fields: [client_id], references: [id])
+  users        users     @relation(fields: [user_id], references: [id])
+
+  @@index([doc_date])
+  @@index([client_id])
+  @@index([status])
+}
