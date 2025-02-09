@@ -3,6 +3,16 @@
   "version": "1.4.0",
   "description": "Backend API",
   "main": "src/index.js",
+  "jest": {
+  "testEnvironment": "node",
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+  "verbose": true,
+  "transform": {
+    "^.+\\.ts?$": "ts-jest"
+  },
+  "testRegex": "/tests/.*\\.(test|spec)?\\.(ts|js)$",
+  "moduleFileExtensions": ["ts", "js", "json", "node"]
+},
   "scripts": {
     "prepare": "husky install",
     "prisma:format": "prisma format",

@@ -1,7 +1,15 @@
+// jest.config.js
 module.exports = {
-  setupFilesAfterEnv: ['src/tests/setup.js'],
-eset: 'ts-jest',
-  Test: 'node',
+  testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  testMatch: ['<rootDir>/tests/**/*.test.js']
+  verbose: true,
+  transform: {
+    '^.+\\.ts?$': 'ts-jest',
+  },
+  testRegex: '/tests/.*\\.(test|spec)?\\.(ts|js)$',
+  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov'],
+  testTimeout: 10000 // 10 секунд для асинхронных тестов
 };
