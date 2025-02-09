@@ -3,12 +3,12 @@ const prisma = new PrismaClient();
 
 beforeAll(async () => {
   console.log('Connecting to database...');
-  await prisma.();
+  await prisma.$connect();
 });
 
 afterAll(async () => {
   console.log('Disconnecting from database...');
-  await prisma.();
+  await prisma.$disconnect();
 });
 
 module.exports = prisma;
