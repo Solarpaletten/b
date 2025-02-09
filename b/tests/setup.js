@@ -1,33 +1,19 @@
 // tests/setup.js
 const { PrismaClient } = require('@prisma/client');
-require('dotenv').config();
-
 const prisma = new PrismaClient();
+const app = require('../src/app');
+const request = require('supertest');
 
-// Нет необходимости объявлять jest и глобальные переменные,
-// они уже доступны в тестовом окружении
 beforeAll(async () => {
-  try {
-    await prisma.$connect();
-    console.log('Database connected');
-  } catch (error) {
-    console.error('Database connection error:', error);
-    throw error;
-  }
+  await prisma.$connect();
 });
 
 afterAll(async () => {
-  try {
-    await prisma.$disconnect();
-    console.log('Database disconnected');
-  } catch (error) {
-    console.error('Database disconnect error:', error);
-  }
+  await prisma.$disconnect();
 });
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
+global.app = app;
+global.request = request;
+global.prisma = prisma;
 
-// Экспортируем prisma для использования в тестах
-module.exports = prisma;
+module.exports = { app, request, prisma };

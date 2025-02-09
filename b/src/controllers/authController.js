@@ -39,7 +39,8 @@ class AuthController {
           verification_token: crypto.randomBytes(32).toString('hex'),
           token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
           role: 'user',
-          is_verified: false
+          email_verified: false,
+          is_active: true
         }
       });
 

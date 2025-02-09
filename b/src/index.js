@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const app = require('./src/app')
 const { logger } = require('./config/logger');
 const prismaManager = require('./utils/create/prismaManager');
 
@@ -11,7 +12,6 @@ const authRoutes = require('./routes/authRoutes');
 const clientsRoutes = require('./routes/clientsRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 
-const app = express();
 
 // Проверка обязательных переменных окружения
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'SMTP_USER', 'SMTP_PASS'];
@@ -21,6 +21,7 @@ for (const envVar of requiredEnvVars) {
         process.exit(1);
     }
 }
+
 
 // Функция проверки состояния базы данных
 async function checkDatabaseState() {

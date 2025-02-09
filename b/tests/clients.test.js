@@ -1,4 +1,4 @@
-const request = require('supertest');
+const request = require('../src/app');
 const app = require('../src/index');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
