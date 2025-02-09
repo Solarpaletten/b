@@ -1,28 +1,33 @@
 // tests/setup.js
-const { jest } = require('@jest/globals');
 const { PrismaClient } = require('@prisma/client');
+require('dotenv').config();
 
 const prisma = new PrismaClient();
 
-// Глобальные переменные для тестов
-global.beforeAll = beforeAll;
-global.afterAll = afterAll;
-global.beforeEach = beforeEach;
-global.afterEach = afterEach;
-global.describe = describe;
-global.it = it;
-global.expect = expect;
-global.prisma = prisma;
-
+// Нет необходимости объявлять jest и глобальные переменные,
+// они уже доступны в тестовом окружении
 beforeAll(async () => {
-  await prisma.$connect();
+  try {
+    await prisma.$connect();
+    console.log('Database connected');
+  } catch (error) {
+    console.error('Database connection error:', error);
+    throw error;
+  }
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
+  try {
+    await prisma.$disconnect();
+    console.log('Database disconnected');
+  } catch (error) {
+    console.error('Database disconnect error:', error);
+  }
 });
 
-// Очистка моков после каждого теста
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+// Экспортируем prisma для использования в тестах
+module.exports = prisma;
