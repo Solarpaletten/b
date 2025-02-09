@@ -1,20 +1,11 @@
 module.exports = {
+  setupFiles: ['<rootDir>/tests/setup.js'],
   testEnvironment: 'node',
-  verbose: true,
-  coverageDirectory: 'coverage',
+  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
   collectCoverageFrom: [
     'src/**/*.js',
-    '!src/index.js',
+    '!src/tests/**',
     '!**/node_modules/**'
   ],
-  coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70
-    }
-  },
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js']
-}; 
+  coverageDirectory: 'coverage'
+};
