@@ -6,7 +6,21 @@ const prisma = new PrismaClient();
 
 describe('Auth Endpoints', () => {
   beforeEach(async () => {
-    await prisma.users.deleteMany({});
+    await prisma.$transaction([
+      prisma.sales.deleteMany({}),
+      prisma.purchases.deleteMany({}),
+      prisma.clients.deleteMany({}),
+      prisma.products.deleteMany({}),
+      prisma.chart_of_accounts.deleteMany({}),
+      prisma.bank_operations.deleteMany({}),
+      prisma.warehouses.deleteMany({}),
+      prisma.doc_settlement.deleteMany({}),
+      prisma.users.deleteMany({})
+    ]);
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
   });
 
   test('should create a new user', async () => {
@@ -46,6 +60,8 @@ describe('Auth Endpoints', () => {
   });
 
   describe('POST /api/auth/login', () => {
+    let user;
+
     beforeEach(async () => {
       const registerRes = await request(app)
         .post('/api/auth/register')
@@ -55,10 +71,7 @@ describe('Auth Endpoints', () => {
           username: 'testuser'
         });
 
-      await prisma.users.update({
-        where: { email: 'test@example.com' },
-        data: { email_verified: true }
-      });
+      user = registerRes.body.user;
     });
 
     it('should login with correct credentials', async () => {
@@ -82,6 +95,90 @@ describe('Auth Endpoints', () => {
         });
 
       expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('error');
+    });
+  });
+
+  describe('POST /api/auth/forgot-password', () => {
+    beforeEach(async () => {
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: 'test@example.com',
+          password: 'password123',
+          username: 'testuser'
+        });
+    });
+
+    it('should send reset password instructions', async () => {
+      const res = await request(app)
+        .post('/api/auth/forgot-password')
+        .send({
+          email: 'test@example.com'
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it('should fail with invalid email', async () => {
+      const res = await request(app)
+        .post('/api/auth/forgot-password')
+        .send({
+          email: 'nonexistent@example.com'
+        });
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error');
+    });
+  });
+
+  describe('POST /api/auth/reset-password', () => {
+    let resetToken;
+
+    beforeEach(async () => {
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: 'test@example.com',
+          password: 'password123',
+          username: 'testuser'
+        });
+
+      await request(app)
+        .post('/api/auth/forgot-password')
+        .send({
+          email: 'test@example.com'
+        });
+
+      const user = await prisma.users.findUnique({
+        where: { email: 'test@example.com' }
+      });
+
+      resetToken = user.reset_token;
+    });
+
+    it('should reset password with valid token', async () => {
+      const res = await request(app)
+        .post('/api/auth/reset-password')
+        .send({
+          token: resetToken,
+          password: 'newpassword123'
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it('should fail with invalid token', async () => {
+      const res = await request(app)
+        .post('/api/auth/reset-password')
+        .send({
+          token: 'invalid-token',
+          password: 'newpassword123'
+        });
+
+      expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty('error');
     });
   });

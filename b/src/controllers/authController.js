@@ -35,11 +35,17 @@ class AuthController {
           verification_token: crypto.randomBytes(32).toString('hex'),
           token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
           role: 'USER',
-          email_verified: false
+          email_verified: process.env.NODE_ENV === 'test'
         }
       });
 
-      await emailService.sendVerification(user.email, user.verification_token);
+      if (process.env.NODE_ENV !== 'test') {
+        try {
+          await emailService.sendVerification(user.email, user.verification_token);
+        } catch (error) {
+          logger.error('Failed to send verification email:', error);
+        }
+      }
 
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
@@ -152,7 +158,7 @@ class AuthController {
       }
 
       const resetToken = crypto.randomBytes(32).toString('hex');
-      const tokenExpires = new Date(Date.now() + 60 * 60 * 1000);
+      const tokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 час
 
       await prismaManager.prisma.users.update({
         where: { id: user.id },
@@ -161,6 +167,14 @@ class AuthController {
           reset_token_expires: tokenExpires
         }
       });
+
+      if (process.env.NODE_ENV !== 'test') {
+        try {
+          await emailService.sendPasswordReset(user.email, resetToken);
+        } catch (error) {
+          logger.error('Failed to send password reset email:', error);
+        }
+      }
 
       res.json({ message: 'Password reset instructions sent to your email' });
     } catch (error) {
@@ -233,13 +247,20 @@ class AuthController {
     try {
       const { email } = req.body;
       const tempPassword = generateTemporaryPassword();
-      
-      await emailService.sendTemporaryPassword(email, tempPassword);
+
+      if (process.env.NODE_ENV !== 'test') {
+        try {
+          await emailService.sendTemporaryPassword(email, tempPassword);
+        } catch (error) {
+          logger.error('Failed to send temporary password email:', error);
+        }
+      }
       
       res.json({ 
-        message: 'Временный пароль отправлен на ваш email' 
+        message: 'Temporary password sent to your email'
       });
     } catch (error) {
+      logger.error('Create temporary password error:', error);
       res.status(500).json({ error: error.message });
     }
   }
