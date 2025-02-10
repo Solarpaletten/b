@@ -1,3 +1,4 @@
+// authController.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -7,17 +8,14 @@ const emailService = require('../services/emailService');
 const { generateTemporaryPassword } = require('../utils/create/tokenGenerator');
 
 class AuthController {
-  // Регистрация пользователя
   async register(req, res) {
     try {
       const { email, username, password } = req.body;
 
-      // Валидация
       if (!email || !username || !password) {
         return res.status(400).json({ error: 'All fields are required' });
       }
 
-      // Проверка существующего пользователя
       const existingUser = await prismaManager.prisma.users.findUnique({
         where: { email }
       });
@@ -26,28 +24,23 @@ class AuthController {
         return res.status(400).json({ error: 'Email already registered' });
       }
 
-      // Хеширование пароля
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(password, salt);
 
-      // Создание пользователя
       const user = await prismaManager.prisma.users.create({
         data: {
           email,
           username,
           password_hash: passwordHash,
           verification_token: crypto.randomBytes(32).toString('hex'),
-          token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
-          role: 'user',
-          email_verified: false,
-          is_active: true
+          token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          role: 'USER',
+          email_verified: false
         }
       });
 
-      // Отправка письма с подтверждением
       await emailService.sendVerification(user.email, user.verification_token);
 
-      // Генерация токена
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
@@ -72,12 +65,10 @@ class AuthController {
     }
   }
 
-  // Вход в систему
   async login(req, res) {
     try {
       const { email, password } = req.body;
 
-      // Поиск пользователя
       const user = await prismaManager.prisma.users.findUnique({
         where: { email }
       });
@@ -86,18 +77,15 @@ class AuthController {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Проверка пароля
       const isValidPassword = await bcrypt.compare(password, user.password_hash);
       if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Проверка верификации
-      if (!user.is_verified) {
+      if (!user.email_verified) {
         return res.status(401).json({ error: 'Please verify your email first' });
       }
 
-      // Создание токена
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
@@ -118,7 +106,6 @@ class AuthController {
     }
   }
 
-  // Подтверждение email
   async verifyEmail(req, res) {
     try {
       const { token } = req.params;
@@ -139,7 +126,7 @@ class AuthController {
       await prismaManager.prisma.users.update({
         where: { id: user.id },
         data: {
-          is_verified: true,
+          email_verified: true,
           verification_token: null,
           token_expires: null
         }
@@ -152,7 +139,6 @@ class AuthController {
     }
   }
 
-  // Сброс пароля
   async forgotPassword(req, res) {
     try {
       const { email } = req.body;
@@ -166,7 +152,7 @@ class AuthController {
       }
 
       const resetToken = crypto.randomBytes(32).toString('hex');
-      const tokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 час
+      const tokenExpires = new Date(Date.now() + 60 * 60 * 1000);
 
       await prismaManager.prisma.users.update({
         where: { id: user.id },
@@ -176,9 +162,6 @@ class AuthController {
         }
       });
 
-      // Отправка письма для сброса пароля (добавьте свою логику)
-      // await emailManager.sendPasswordResetEmail(user.email, resetToken);
-
       res.json({ message: 'Password reset instructions sent to your email' });
     } catch (error) {
       logger.error('Forgot password error:', error);
@@ -186,7 +169,6 @@ class AuthController {
     }
   }
 
-  // Установка нового пароля
   async resetPassword(req, res) {
     try {
       const { token, password } = req.body;
@@ -223,7 +205,6 @@ class AuthController {
     }
   }
 
-  // Получение текущего пользователя
   async getCurrentUser(req, res) {
     try {
       const user = await prismaManager.prisma.users.findUnique({
@@ -233,7 +214,7 @@ class AuthController {
           email: true,
           username: true,
           role: true,
-          is_verified: true
+          email_verified: true
         }
       });
 
@@ -253,9 +234,6 @@ class AuthController {
       const { email } = req.body;
       const tempPassword = generateTemporaryPassword();
       
-      // Обновляем пароль в БД
-      
-      // Отправляем временный пароль
       await emailService.sendTemporaryPassword(email, tempPassword);
       
       res.json({ 
@@ -267,4 +245,4 @@ class AuthController {
   }
 }
 
-module.exports = new AuthController(); 
+module.exports = new AuthController();

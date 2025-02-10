@@ -9,10 +9,9 @@ datasource db {
 }
 
 // Enums
-enum UserRole {
-  admin
-  user
-  manager
+enum Role {
+  USER
+  ADMIN
 }
 
 enum ClientRole {
@@ -36,7 +35,7 @@ model users {
   email               String    @unique
   username            String
   password_hash       String
-  role                UserRole  @default(user) // user, admin, manager
+  role                Role  @default(USER)  // Changed from String to Role
   status              String    @default("active")
   email_verified      Boolean   @default(false)
   verification_token  String?
