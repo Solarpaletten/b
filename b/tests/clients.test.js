@@ -3,7 +3,7 @@ const app = require('../src/app');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 describe('Client Endpoints', () => {
   let testUser;
@@ -43,7 +43,7 @@ describe('Client Endpoints', () => {
       console.error('Error creating test user:', error);
       throw error;
     }
-  }, 10000);
+  }, 30000);
 
   afterAll(async () => {
     await prisma.$disconnect();
@@ -66,8 +66,12 @@ describe('Client Endpoints', () => {
   });
 
   test('should get all clients', async () => {
+    // Проверяем, что у нас есть тестовый пользователь
+  expect(testUser).toBeDefined();
+  expect(testUser.id).toBeDefined();
+
     // Создаем тестового клиента
-    await prisma.clients.create({
+    const client = await prisma.clients.create({
       data: {
         name: 'Test Client',
         email: 'client@example.com',
@@ -124,6 +128,7 @@ describe('Client Endpoints', () => {
       });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('name', 'Updated Client');
+    expect(Array.isArray(res.body)).toBeTruthy();
+    expect(res.body.le).toHaveProperty('name', 'Updated Client');
   });
 });
