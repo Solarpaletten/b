@@ -84,26 +84,40 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     const clientId = parseInt(req.params.id, 10);
+    
+    // Сначала проверяем существование клиента
     const existingClient = await prisma.clients.findFirst({
-      where: { 
-        id: clientId,
-        user_id: req.user.id 
+      where: {
+        AND: [
+          { id: clientId },
+          { user_id: req.user.id }
+        ]
       }
     });
 
     if (!existingClient) {
+      logger.error(`Client not found: ${clientId} for user ${req.user.id}`);
       return res.status(404).json({ error: 'Client not found' });
     }
 
+    // Обновляем клиента
     const updatedClient = await prisma.clients.update({
-      where: { 
+      where: {
         id: clientId,
-        user_id: req.user.id
       },
-      data: req.body
+      data: {
+        name: req.body.name,
+        // Сохраняем остальные поля без изменений
+        email: existingClient.email,
+        code: existingClient.code,
+        vat_code: existingClient.vat_code,
+        user_id: req.user.id
+      }
     });
 
+    logger.info(`Client ${clientId} updated successfully for user ${req.user.id}`);
     res.json(updatedClient);
+
   } catch (error) {
     logger.error('Error updating client:', error);
     res.status(500).json({ error: 'Failed to update client' });
