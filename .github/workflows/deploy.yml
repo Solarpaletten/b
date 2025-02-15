@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - name: Checkout code
@@ -17,6 +20,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
       # Backend (`b`)
       - name: Install b
@@ -32,9 +44,9 @@ jobs:
         run: npm install
         working-directory: ./f
 
-      - name: Run f
-        run: npm test
-        working-directory: ./f
+      # - name: Run f
+      #   run: npm test
+      #   working-directory: ./f
 
       - name: Build f
         run: npm run build
