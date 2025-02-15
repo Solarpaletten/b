@@ -6,11 +6,11 @@ async function createUser() {
     const newUser = await prismaManager.prisma.users.create({
       data: {
         email: 'solar2@solar.pl',
-        password_hash: '$2a$10$Oolo3IFkBwjpU.pleG4JPOSjZShksma.M9HkX8e.GxiKCHfjjG6bG',
+        password_hash: '$2a$10$dx8SXrT3w9XboQ1p0vk1/.dFrSL921YPFZ/ILw4lWL4BJjdwJWtuS',
         username: 'solar',
-        role: 'admin',
+        role: 'ADMIN',
         email_verified: true, // изменено с is_verified
-        status: 'active' // вместо is_active используем status
+        status: 'ACTIVE' // вместо is_active используем status
       }
     });
     

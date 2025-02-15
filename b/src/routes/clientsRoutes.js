@@ -60,22 +60,23 @@ router.post('/', auth, async (req, res) => {
 // PUT /api/clients/:id - Обновление клиента
 router.put('/:id', auth, async (req, res) => {
   try {
-    const client = await prisma.clients.update({
+    const updatedClient = await prisma.clients.update({
       where: {
         id: parseInt(req.params.id),
         user_id: req.user.id
       },
       data: req.body
     });
-    res.json(client);
+    res.json(updatedClient);
   } catch (error) {
     logger.error('Error updating client:', error);
-    res.status(500).json({ error: 'Failed to update client' });
+
+    res.status(400).json({ error: 'Failed to update client' });
   }
 });
 
 // DELETE /api/clients/:id - Удаление клиента
-router.delete('/:id', auth, async (req, res) => {
+  router.delete('/:id', auth, async (req, res) => {
   try {
     await prisma.clients.delete({
       where: {
