@@ -34,8 +34,7 @@ jobs:
       - name: Install b
         run: |
           cd ./b
-          npm set-script prepare ""
-          npm install --no-install-links
+          npm install --ignore-scripts
           npx prisma generate
         env:
           CI: true
