@@ -1,7 +1,6 @@
 // Файл: src/pages/Dashboard/dashboard.tsx
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, AlertTitle, AlertDescription } from '../../components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '../../components/ui/alert';
 import DashboardCard from './dashboardCard';
 
 // Определяем интерфейс для структуры данных от API

@@ -1,5 +1,4 @@
 // Файл: src/pages/Clients/clients.tsx
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertTitle } from '../../components/ui/alert';
 

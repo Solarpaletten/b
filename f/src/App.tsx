@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './components/protectedRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Dashboard from './pages/Dashboard/dashboard';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import LoginForm from './components/auth/loginForm';
+import ProtectedRoute from './components/protectedRoute';
+import Dashboard from './pages/Dashboard/dashboard';
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -23,7 +23,11 @@ const App = () => {
           <Route path="/api/login" element={<LoginForm />} />
 
           {/* Защищённый маршрут */}
-          <Route element={<ProtectedRoute />}>
+          <Route element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }>
             <Route path="/" element={<Dashboard />} />
           </Route>
         </Routes>

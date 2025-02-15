@@ -1,5 +1,4 @@
 // Файл: src/pages/Home/home.tsx
-import React from 'react';
 
 const Home = () => {
   return (
