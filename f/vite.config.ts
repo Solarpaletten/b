@@ -9,7 +9,6 @@ export default defineConfig({
         target: 'http://localhost:4000',
         changeOrigin: true,
         secure: false,
-        credentials: 'include' // Важно для работы с авторизацией
       }
     }
   }

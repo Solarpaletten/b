@@ -1,6 +1,4 @@
 // src/components/auth/registerForm.tsx
-
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {

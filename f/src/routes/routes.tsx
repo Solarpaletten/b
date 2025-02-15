@@ -1,5 +1,4 @@
 // Файл: src/routes/routes.tsx
-import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import LoginForm from '../components/auth/loginForm';
 import RegisterForm from '../components/auth/registerForm';
@@ -11,21 +10,29 @@ import ErrorBoundary from '../components/errorBoundary';
 
 export const router = createBrowserRouter([
   {
-    element: (
-      <ErrorBoundary>
-        <ProtectedRoute />
-      </ErrorBoundary>
-    ),
+    path: "/",
+    element: <ErrorBoundary><ProtectedRoute /></ErrorBoundary>,
     children: [
       {
         element: <Layout />,
         children: [
-          { path: '/', element: <Dashboard /> },
-          { path: '/clients', element: <Clients /> },
+          { index: true, // используем index вместо path
+            element: <Dashboard />,
+          },
+          {
+            path: '/clients',
+            element: <Clients />,
+          },
         ],
       },
     ],
   },
-  { path: '/api/login', element: <LoginForm /> },
-  { path: '/api/register', element: <RegisterForm /> },
+  {
+    path: 'login', // убрал /api
+    element: <LoginForm />,
+  },
+  {
+    path: 'register',
+    element: <RegisterForm />,
+  },
 ]);
