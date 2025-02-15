@@ -32,12 +32,27 @@ jobs:
 
       # Backend (`b`)
       - name: Install b
-        run: npm install
-        working-directory: ./b
+        run: |
+          cd ./b
+          npm set-script prepare ""
+          npm install --no-install-links
+          npx prisma generate
+        env:
+          CI: true
 
       - name: Run b
         run: npm test
         working-directory: ./b
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Check Database Connection
+        run: |
+          cd ./b
+          npx prisma db push --preview-feature
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       # Frontend (`f`)
       - name: Install f
