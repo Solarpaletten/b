@@ -91,4 +91,34 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
+// POST /api/clients/create-user-and-client - Создание пользователя и клиента
+router.post('/create-user-and-client', async (req, res) => {
+  try {
+    // Создание пользователя
+    const user = await prisma.users.create({
+      data: {
+        email: req.body.email,
+        password: req.body.password, // Убедитесь, что пароль хешируется перед сохранением
+      },
+    });
+
+    // Создание клиента с привязкой к пользователю
+    const client = await prisma.clients.create({
+      data: {
+        ...req.body.client,
+        user_id: user.id,
+      },
+    });
+
+    res.status(201).json({
+      message: 'User and Client created successfully',
+      user,
+      client,
+    });
+  } catch (error) {
+    logger.error('Error creating user and client:', error);
+    res.status(500).json({ error: 'Failed to create user and client' });
+  }
+});
+
 module.exports = router;
