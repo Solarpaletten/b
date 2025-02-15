@@ -60,18 +60,33 @@ router.post('/', auth, async (req, res) => {
 // PUT /api/clients/:id - Обновление клиента
 router.put('/:id', auth, async (req, res) => {
   try {
+    const clientId = parseInt(req.params.id, 10);
+
+    // Проверяем существование клиента и принадлежность текущему пользователю
+    const existingClient = await prisma.clients.findFirst({
+      where: { 
+        id: clientId,
+        user_id: req.user.id 
+      },
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ error: 'Клиент не найден' });
+    }
+
+    // Обновляем клиента
     const updatedClient = await prisma.clients.update({
-      where: {
-        id: parseInt(req.params.id),
+      where: { 
+        id: clientId,
         user_id: req.user.id
       },
-      data: req.body
+      data: req.body,
     });
+
     res.json(updatedClient);
   } catch (error) {
     logger.error('Error updating client:', error);
-
-    res.status(400).json({ error: 'Failed to update client' });
+    res.status(500).json({ error: 'Failed to update client' });
   }
 });
 
