@@ -1,16 +1,16 @@
 const { PrismaClient } = require('@prisma/client');
-const prismaManager = require('./prismaManager');
+const prismaManager = require('./create/prismaManager');
 
 async function createUser() {
   try {
     const newUser = await prismaManager.prisma.users.create({
       data: {
-        email: 'solar2@solar.pl',
-        password_hash: '$2a$10$dx8SXrT3w9XboQ1p0vk1/.dFrSL921YPFZ/ILw4lWL4BJjdwJWtuS',
+        email: 'solar@solar.pl',
+        password_hash: '$2a$10$gxupJdmymT3mtymEjNZpPefwn1iymemwU4c9OrHaP8Bm/mTFCIeqi',
         username: 'solar',
         role: 'ADMIN',
-        email_verified: true, // изменено с is_verified
-        status: 'ACTIVE' // вместо is_active используем status
+        email_verified: true,
+        status: 'ACTIVE' 
       }
     });
     
