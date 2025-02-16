@@ -8,6 +8,8 @@
     "prepare": "exit 0",
     "pretest": "rm -rf logs && mkdir -p logs",
     "test": "jest --forceExit --detectOpenHandles",
+    "scan": "node src/utils/dbScan.js",
+    "ca": "node src/utils/ca.js",
     "prisma:format": "prisma format",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
