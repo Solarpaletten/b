@@ -1,11 +1,11 @@
 {
   "name": "b",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "Backend API",
   "main": "src/index.js",
   "proxy": "http://localhost:4000",
-  "scripts": { 
-    "prepare": "exit 0", 
+  "scripts": {
+    "prepare": "exit 0",
     "pretest": "rm -rf logs && mkdir -p logs",
     "test": "jest --forceExit --detectOpenHandles",
     "prisma:format": "prisma format",

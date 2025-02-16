@@ -1,19 +1,31 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
-const VERSION_FILE = path.join(__dirname, '../src/config/versions.js');
-const PACKAGE_JSON = path.join(__dirname, '../package.json');
+const updateVersion = (type = 'patch') => {
+  // Чтение package.json
+  const packagePath = path.join(__dirname, '..', 'package.json');
+  const package = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  
+  // Чтение или создание version-history.json
+  const historyPath = path.join(__dirname, '..', 'version-history.json');
+  let versionHistory = [];
+  
+  try {
+    versionHistory = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    if (!Array.isArray(versionHistory)) {
+      versionHistory = [];
+    }
+  } catch (error) {
+    // Если файл не существует или невалидный JSON, создаем новый массив
+    versionHistory = [];
+  }
 
-function updateVersion(type = 'patch') {
-  // Читаем текущую версию из package.json
-  const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON, 'utf8'));
-  const currentVersion = packageJson.version;
-  const [major, minor, patch] = currentVersion.split('.').map(Number);
-
-  // Определяем новую версию
+  // Разбиваем текущую версию
+  const [major, minor, patch] = package.version.split('.').map(Number);
+  
+  // Обновляем версию
   let newVersion;
-  switch(type) {
+  switch (type) {
     case 'major':
       newVersion = `${major + 1}.0.0`;
       break;
@@ -25,55 +37,30 @@ function updateVersion(type = 'patch') {
       newVersion = `${major}.${minor}.${patch + 1}`;
   }
 
-  // Обновляем package.json
-  packageJson.version = newVersion;
-  fs.writeFileSync(PACKAGE_JSON, JSON.stringify(packageJson, null, 2));
-
-  // Обновляем versions.js
-  const now = new Date().toISOString().split('T')[0];
-  const versionHistory = require(VERSION_FILE).VERSION_HISTORY;
-  
+  // Создаем запись в истории
   const newVersionEntry = {
-    version: `v${newVersion}`,
-    date: now,
-    description: process.env.VERSION_DESC || 'Version update',
+    version: newVersion,
+    date: new Date().toISOString(),
+    type,
+    description: process.env.VERSION_DESC || `${type} update`,
     changes: process.env.VERSION_CHANGES ? 
       process.env.VERSION_CHANGES.split(',') : 
-      ['Version update']
+      [`Updated ${type} version`]
   };
 
+  // Добавляем новую версию в историю
   versionHistory.push(newVersionEntry);
 
-  const versionFileContent = `
-const VERSION_HISTORY = ${JSON.stringify(versionHistory, null, 2)};
+  // Обновляем package.json
+  package.version = newVersion;
+  
+  // Сохраняем изменения
+  fs.writeFileSync(packagePath, JSON.stringify(package, null, 2));
+  fs.writeFileSync(historyPath, JSON.stringify(versionHistory, null, 2));
 
-const CURRENT_VERSION = 'v${newVersion}';
-
-module.exports = {
-  VERSION_HISTORY,
-  CURRENT_VERSION
+  console.log(`Version updated to ${newVersion}`);
 };
-`;
-
-  fs.writeFileSync(VERSION_FILE, versionFileContent);
-
-  // Git команды
-  try {
-    // Добавляем изменения
-    execSync('git add .');
-    
-    // Создаем коммит
-    execSync(`git commit -m "Version ${newVersion}"`);
-    
-    // Создаем тег
-    execSync(`git tag v${newVersion}`);
-    
-    console.log(`Successfully updated to version ${newVersion}`);
-  } catch (error) {
-    console.error('Git operations failed:', error.message);
-  }
-}
 
 // Получаем тип обновления версии из аргументов командной строки
-const versionType = process.argv[2] || 'patch';
-updateVersion(versionType); 
+const type = process.argv[2] || 'patch';
+updateVersion(type);
