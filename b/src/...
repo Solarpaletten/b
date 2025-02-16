@@ -1,0 +1,22 @@
+```
+
+Для фронтенда (frontend):
+```javascript
+<vscode_codeblock_uri>file:///Users/tlnc/Documents/solar/s/b/f/src/...</vscode_codeblock_uri>```
+
+Например, для создания нового файла конфигурации API:
+
+```javascript
+<vscode_codeblock_uri>file:///Users/tlnc/Documents/solar/s/b/b/src/config/apiConfig.js</vscode_codeblock_uri>const API_CONFIG = {
+  BASE_URL: process.env.NODE_ENV === 'production' 
+    ? 'https://npmfr.onrender.com/api'
+    : 'http://localhost:4000/api',
+  ENDPOINTS: {
+    AUTH: {
+      LOGIN: '/auth/login',
+      REGISTER: '/auth/register'
+    }
+  }
+};
+
+module.exports = API_CONFIG;
