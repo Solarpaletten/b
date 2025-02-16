@@ -69,3 +69,10 @@ cp .env.example .env
 
 f and b
 
+VITE_API_URL=https://npmbk.onrender.com
+
+VITE_API_URL=https://npmfr.onrender.com
+
+VITE_API_URL=http://localhost:4000
+
+VITE_API_URL=http://localhost:5173
