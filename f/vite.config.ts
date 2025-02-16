@@ -11,5 +11,11 @@ export default defineConfig({
         secure: false,
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: true,
   }
 })

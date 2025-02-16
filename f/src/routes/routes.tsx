@@ -9,39 +9,46 @@ import Clients from '../pages/Clients/clients';
 import Dashboard from '../pages/Dashboard/dashboard';
 
 export const router = createBrowserRouter([
+  // Публичные маршруты
+  {
+    path: "/auth",
+    element: (
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
+    ),
+    children: [
+      {
+        path: "login",
+        element: <LoginForm />
+      },
+      {
+        path: "register",
+        element: <RegisterForm />
+      }
+    ]
+  },
+// Защищенные маршруты
   {
     path: "/",
     element: (
       <ErrorBoundary>
         <ProtectedRoute>
-          <Outlet />
+          <Layout>
+            <Outlet />
+          </Layout>
         </ProtectedRoute>
       </ErrorBoundary>
     ),
     children: [
       {
-        element: <Layout>
-          <Outlet />
-        </Layout>,
-        children: [
-          { 
-            index: true,
-            element: <Dashboard /> 
-          },
-          { 
-            path: 'clients', 
-            element: <Clients /> 
-          },
-        ],
+        index: true,
+        element: <Dashboard />
       },
-    ],
-  },
-  { 
-    path: 'login',
-    element: <LoginForm /> 
-  },
-  { 
-    path: 'register',
-    element: <RegisterForm /> 
-  },
+      {
+        path: 'clients',
+        element: <Clients />
+      }
+    ]
+  }
 ]);
