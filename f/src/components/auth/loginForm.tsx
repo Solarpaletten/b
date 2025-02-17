@@ -2,17 +2,38 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/api'
+import { AxiosError } from 'axios'; 
+
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); 
   const [dbStatus, setDbStatus] = useState<any>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Проверка статуса БД при загрузке формы
+  useEffect(() => {
+    const checkDatabase = async () => {
+      try {
+        const response = await api.get('/api/health');
+        setDbStatus(response.data);
+      } catch (err) {
+        const error = err as AxiosError;
+        setDbStatus({ 
+          status: 'error',
+          error: error.message || 'Failed to connect to database'
+      });
+    }
+  };
+    checkDatabase();
+  }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
       const response = await api.post('/auth/login', {
@@ -24,25 +45,13 @@ const LoginForm = () => {
         localStorage.setItem('token', response.data.token);
         navigate('/');
       }
-    } catch (error) {
-      setError('Неверный email или пароль');
-      console.error('Login failed:', error);
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      setError(error.response?.data?.message || 'Failed to login. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const checkDatabase = async () => {
-    try {
-      const response = await api.get('/api/health');
-      setDbStatus(response.data);
-    } catch (error) {
-      setDbStatus({ status: 'error', error: error.message });
-    }
-  };
-
-  // Проверка статуса БД при загрузке формы
-  useEffect(() => {
-    checkDatabase();
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -83,7 +92,7 @@ const LoginForm = () => {
             </div>
           </div>
 
-          {/* Добавляем блок с информацией о БД */}
+          {/* Статус базы данных */}
           <div className="mt-4 p-4 bg-gray-100 rounded-md">
             <h3 className="text-lg font-medium text-gray-900">Database Status:</h3>
             {dbStatus ? (
@@ -92,40 +101,20 @@ const LoginForm = () => {
                 {dbStatus.timestamp && (
                   <p>Last Check: {new Date(dbStatus.timestamp).toLocaleString()}</p>
                 )}
-                {dbStatus.tables && (
-                  <div className="mt-2">
-                    <p className="font-medium">Available Tables:</p>
-                    <ul className="list-disc pl-5">
-                      {dbStatus.tables.map((table: string) => (
-                        <li key={table}>{table}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             ) : (
               <p className="text-sm text-gray-500">Checking database status...</p>
             )}
           </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Sign in
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          >
+            {isLoading ? 'Signing in...' : 'Sign in'}
+          </button>
         </form>
-
-        {/* Кнопка для ручной проверки соединения */}
-        <button
-          type="button"
-          onClick={checkDatabase}
-          className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-        >
-          Check Database Connection
-        </button>
       </div>
     </div>
   );

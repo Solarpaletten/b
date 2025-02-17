@@ -1,16 +1,10 @@
-// Файл: src/components/layout/layout.tsx
-import React from 'react';
-import Header from './header';
-import Sidebar from './sidebar';
+// src/components/layout.tsx
+import { Outlet } from 'react-router-dom';
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout = () => {
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1">
-        <Header />
-        {children}
-      </main>
+    <div>
+      <Outlet />
     </div>
   );
 };
