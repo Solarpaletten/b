@@ -36,16 +36,34 @@ apiRouter.use('/stats', require('./routes/statsRoutes'));
 
 app.use('/api', apiRouter);
 
-
-
-// Health-check endpoint
+// Health-check endpoint с информацией о таблицах
 app.get('/api/health', async (req, res) => {
     try {
+        // Проверяем соединение с БД через prismaManager
         await prismaManager.prisma.$queryRaw`SELECT 1`;
-        res.json({ status: 'healthy', timestamp: new Date() });
+        
+        // Получаем список таблиц
+        const tables = await prismaManager.prisma.$queryRaw`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        `;
+
+        res.json({
+            status: 'healthy',
+            timestamp: new Date(),
+            tables: tables.map(t => t.table_name),
+            database_url: process.env.DATABASE_URL?.split('@')[1], // Показываем только хост
+            connection: 'Connected via PrismaManager'
+        });
     } catch (error) {
         logger.error('Health check failed:', error);
-        res.status(503).json({ status: 'unhealthy', error: error.message });
+        res.status(503).json({
+            status: 'unhealthy',
+            error: error.message,
+            timestamp: new Date(),
+            connection: 'Failed via PrismaManager'
+        });
     }
 });
 
