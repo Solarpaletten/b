@@ -1,20 +1,29 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginForm from '../components/auth/loginForm';
 import Layout from '../components/layout/layout';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import Dashboard from '../pages/Dashboard/dashboard';
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    children: [
       {
-        path: "",
+        path: "/login",
         element: <LoginForm />,
       },
+
       {
-        path: "auth/login",
-        element: <LoginForm />,
+        path: "/",
+        element: <ProtectedRoute><Layout /></ProtectedRoute>,
+        children: [
+          {
+          path: "",
+          element: <Navigate to="/dashboard" replace />
+        },
+
+        {
+          path: "dashboard",
+          element: <Dashboard /> 
+        },
+
+        ]
       }
-    ]
-  }
 ]);

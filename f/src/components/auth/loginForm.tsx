@@ -17,10 +17,16 @@ const LoginForm = () => {
   useEffect(() => {
     const checkDatabase = async () => {
       try {
-        const response = await api.get('/api/health');
+        const response = await api.get('/health');
+        console.log('Database status', response.data);
         setDbStatus(response.data);
       } catch (err) {
         const error = err as AxiosError;
+        console.error('Database error:',{
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+        });
         setDbStatus({ 
           status: 'error',
           error: error.message || 'Failed to connect to database'
@@ -36,22 +42,36 @@ const LoginForm = () => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login with:', { email});
       const response = await api.post('/auth/login', {
         email,
         password
       });
       
+      console.log('Login response:', response.data); 
+      
+
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      setError(error.response?.data?.message || 'Failed to login. Please check your credentials.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      const error = err as AxiosError<{ message?: string }>;
+
+
+   
+    
+    
+      console.error('Login error details', {
+    message: error.message,
+    status: error.response?.status,
+    data: error.response?.data
+  });
+  setError(error.response?.data?.message || 'Login failed. Please try again.');
+ } finally {
+   setIsLoading(false);
+ }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

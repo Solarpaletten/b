@@ -11,9 +11,10 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || ['http://localhost:3000', 'http://localhost:5173'],
+    origin: ['http://localhost:5173', 'http://localhost:3000'], 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

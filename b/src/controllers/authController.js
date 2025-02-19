@@ -71,26 +71,32 @@ class AuthController {
     }
   }
 
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
+async login(req, res) {
+  try {
+    const { email, password } = req.body;
+    
+    // Логируем попытку входа
+    logger.info('Login attempt:', { email });
 
-      const user = await prismaManager.prisma.users.findUnique({
-        where: { email }
-      });
+    const user = await prismaManager.prisma.users.findUnique({
+      where: { email }
+    });
 
-      if (!user) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
+    if (!user) {
+      logger.warn('Login failed: User not found', { email });
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
 
-      const isValidPassword = await bcrypt.compare(password, user.password_hash);
-      if (!isValidPassword) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    if (!isValidPassword) {
+      logger.warn('Login failed: Invalid password', { email });
+      return res.status(401).json({ message: 'Неверный пароль' });
+    }
 
-      if (!user.email_verified) {
-        return res.status(401).json({ error: 'Please verify your email first' });
-      }
+    if (!user.email_verified) {
+      logger.warn('Login failed: Email not verified', { email });
+      return res.status(403).json({ message: 'Пожалуйста, подтвердите email' });
+    }
 
       const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
@@ -106,11 +112,12 @@ class AuthController {
           role: user.role
         }
       });
-    } catch (error) {
-      logger.error('Login error:', error);
-      res.status(500).json({ error: 'Authentication failed' });
-    }
+    
+      } catch (error) {
+    logger.error('Login error:', error);
+    res.status(500).json({ message: 'Ошибка сервера при попытке входа' });
   }
+}
 
   async verifyEmail(req, res) {
     try {
