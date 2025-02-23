@@ -68,10 +68,10 @@
     "sharp": "^0.32.1",
     "stopword": "^2.0.8",
     "uuid": "^11.0.5",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+     "@prisma/client": "^6.4.1"
   },
   "devDependencies": {
-    "@prisma/client": "^6.4.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.10",
     "eslint": "^8.57.1",
