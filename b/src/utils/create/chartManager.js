@@ -8,11 +8,11 @@ class ChartManager {
     this.outputDir = path.join(process.cwd(), 'charts');
     this.width = 800;
     this.height = 600;
-    
+
     this.chartJS = new ChartJSNodeCanvas({
       width: this.width,
       height: this.height,
-      backgroundColour: 'white'
+      backgroundColour: 'white',
     });
 
     this.init();
@@ -34,31 +34,31 @@ class ChartManager {
         type: 'line',
         data: {
           labels: data.labels,
-          datasets: data.datasets.map(dataset => ({
+          datasets: data.datasets.map((dataset) => ({
             label: dataset.label,
             data: dataset.data,
             fill: false,
             borderColor: dataset.color || this.getRandomColor(),
-            tension: 0.1
-          }))
+            tension: 0.1,
+          })),
         },
         options: {
           responsive: true,
           plugins: {
             title: {
               display: true,
-              text: options.title || 'Line Chart'
+              text: options.title || 'Line Chart',
             },
             legend: {
-              position: 'top'
-            }
+              position: 'top',
+            },
           },
           scales: {
             y: {
-              beginAtZero: options.beginAtZero || false
-            }
-          }
-        }
+              beginAtZero: options.beginAtZero || false,
+            },
+          },
+        },
       };
 
       const buffer = await this.chartJS.renderToBuffer(configuration);
@@ -80,24 +80,25 @@ class ChartManager {
         type: 'bar',
         data: {
           labels: data.labels,
-          datasets: data.datasets.map(dataset => ({
+          datasets: data.datasets.map((dataset) => ({
             label: dataset.label,
             data: dataset.data,
-            backgroundColor: dataset.colors || this.generateColors(dataset.data.length)
-          }))
+            backgroundColor:
+              dataset.colors || this.generateColors(dataset.data.length),
+          })),
         },
         options: {
           responsive: true,
           plugins: {
             title: {
               display: true,
-              text: options.title || 'Bar Chart'
+              text: options.title || 'Bar Chart',
             },
             legend: {
-              position: 'top'
-            }
-          }
-        }
+              position: 'top',
+            },
+          },
+        },
       };
 
       const buffer = await this.chartJS.renderToBuffer(configuration);
@@ -119,23 +120,26 @@ class ChartManager {
         type: 'pie',
         data: {
           labels: data.labels,
-          datasets: [{
-            data: data.values,
-            backgroundColor: data.colors || this.generateColors(data.values.length)
-          }]
+          datasets: [
+            {
+              data: data.values,
+              backgroundColor:
+                data.colors || this.generateColors(data.values.length),
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             title: {
               display: true,
-              text: options.title || 'Pie Chart'
+              text: options.title || 'Pie Chart',
             },
             legend: {
-              position: 'top'
-            }
-          }
-        }
+              position: 'top',
+            },
+          },
+        },
       };
 
       const buffer = await this.chartJS.renderToBuffer(configuration);
@@ -171,24 +175,24 @@ class ChartManager {
       const configuration = {
         type: 'scatter',
         data: {
-          datasets: data.datasets.map(dataset => ({
+          datasets: data.datasets.map((dataset) => ({
             label: dataset.label,
             data: dataset.data,
-            backgroundColor: dataset.color || this.getRandomColor()
-          }))
+            backgroundColor: dataset.color || this.getRandomColor(),
+          })),
         },
         options: {
           responsive: true,
           plugins: {
             title: {
               display: true,
-              text: options.title || 'Scatter Chart'
+              text: options.title || 'Scatter Chart',
             },
             legend: {
-              position: 'top'
-            }
-          }
-        }
+              position: 'top',
+            },
+          },
+        },
       };
 
       const buffer = await this.chartJS.renderToBuffer(configuration);
@@ -204,4 +208,4 @@ class ChartManager {
   }
 }
 
-module.exports = new ChartManager(); 
+module.exports = new ChartManager();

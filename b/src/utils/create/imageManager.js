@@ -34,9 +34,12 @@ class ImageManager {
       if (options.resize) {
         image.resize({
           width: Math.min(options.resize.width || this.maxWidth, this.maxWidth),
-          height: Math.min(options.resize.height || this.maxHeight, this.maxHeight),
+          height: Math.min(
+            options.resize.height || this.maxHeight,
+            this.maxHeight
+          ),
           fit: options.resize.fit || 'cover',
-          position: options.resize.position || 'center'
+          position: options.resize.position || 'center',
         });
       }
 
@@ -73,7 +76,7 @@ class ImageManager {
       // Сохраняем результат
       const filename = `${path.parse(inputPath).name}-${Date.now()}.${format}`;
       const outputPath = path.join(this.outputDir, filename);
-      
+
       await image.toFile(outputPath);
       return outputPath;
     } catch (error) {
@@ -90,7 +93,9 @@ class ImageManager {
       const format = options.format || 'jpeg';
 
       const image = sharp(inputPath);
-      const filename = `thumb-${path.parse(inputPath).name}-${Date.now()}.${format}`;
+      const filename = `thumb-${
+        path.parse(inputPath).name
+      }-${Date.now()}.${format}`;
       const outputPath = path.join(this.cacheDir, filename);
 
       await image
@@ -115,15 +120,19 @@ class ImageManager {
         .resize(Math.floor(metadata.width * 0.3)) // 30% от ширины изображения
         .toBuffer();
 
-      const filename = `watermarked-${path.parse(inputPath).name}-${Date.now()}.${metadata.format}`;
+      const filename = `watermarked-${
+        path.parse(inputPath).name
+      }-${Date.now()}.${metadata.format}`;
       const outputPath = path.join(this.outputDir, filename);
 
       await image
-        .composite([{
-          input: watermark,
-          gravity: options.gravity || 'southeast',
-          blend: options.blend || 'over'
-        }])
+        .composite([
+          {
+            input: watermark,
+            gravity: options.gravity || 'southeast',
+            blend: options.blend || 'over',
+          },
+        ])
         .toFile(outputPath);
 
       return outputPath;
@@ -139,13 +148,15 @@ class ImageManager {
       const image = sharp(inputPath);
       const metadata = await image.metadata();
 
-      const filename = `optimized-${path.parse(inputPath).name}-${Date.now()}.${metadata.format}`;
+      const filename = `optimized-${path.parse(inputPath).name}-${Date.now()}.${
+        metadata.format
+      }`;
       const outputPath = path.join(this.outputDir, filename);
 
       await image
         .toFormat(metadata.format, {
           quality: options.quality || 70,
-          chromaSubsampling: '4:2:0'
+          chromaSubsampling: '4:2:0',
         })
         .toFile(outputPath);
 
@@ -160,12 +171,12 @@ class ImageManager {
   async convert(inputPath, format, options = {}) {
     try {
       const image = sharp(inputPath);
-      const filename = `converted-${path.parse(inputPath).name}-${Date.now()}.${format}`;
+      const filename = `converted-${
+        path.parse(inputPath).name
+      }-${Date.now()}.${format}`;
       const outputPath = path.join(this.outputDir, filename);
 
-      await image
-        .toFormat(format, options)
-        .toFile(outputPath);
+      await image.toFormat(format, options).toFile(outputPath);
 
       return outputPath;
     } catch (error) {
@@ -186,4 +197,4 @@ class ImageManager {
   }
 }
 
-module.exports = new ImageManager(); 
+module.exports = new ImageManager();

@@ -4,13 +4,13 @@ const prisma = new PrismaClient();
 const verifyEmail = async (req, res, next) => {
   try {
     const user = await prisma.users.findUnique({
-      where: { id: req.user.userId }
+      where: { id: req.user.userId },
     });
 
     if (!user.email_verified) {
       return res.status(403).json({
         error: 'Email not verified',
-        message: 'Please verify your email address before continuing'
+        message: 'Please verify your email address before continuing',
       });
     }
 
@@ -21,5 +21,5 @@ const verifyEmail = async (req, res, next) => {
 };
 
 module.exports = {
-  verifyEmail
-}; 
+  verifyEmail,
+};

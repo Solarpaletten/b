@@ -22,7 +22,7 @@ const levels = {
   warn: 1,
   info: 2,
   http: 3,
-  debug: 4
+  debug: 4,
 };
 
 // Определение уровня логирования на основе окружения
@@ -43,11 +43,11 @@ const logger = winston.createLogger({
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.simple()
-      )
+      ),
     }),
     new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
 });
 
 // Функция для логирования HTTP запросов
@@ -61,7 +61,7 @@ const httpLogger = (req, res, next) => {
       status: res.statusCode,
       duration: `${duration}ms`,
       userAgent: req.get('user-agent'),
-      ip: req.ip
+      ip: req.ip,
     });
   });
   next();
@@ -73,15 +73,15 @@ const dbLogger = {
     logger.debug('Database Query:', {
       query: query.query,
       params: query.params,
-      duration: query.duration
+      duration: query.duration,
     });
   },
   error: (error) => {
     logger.error('Database Error:', {
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
-  }
+  },
 };
 
 // Утилиты для логирования
@@ -98,7 +98,7 @@ const logUtils = {
       const duration = Date.now() - start;
       logger.error(`Performance Error: ${name}`, {
         duration: `${duration}ms`,
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -112,12 +112,12 @@ const logUtils = {
   // Логирование безопасности
   logSecurity: (event, data) => {
     logger.warn('Security Event', { event, data });
-  }
+  },
 };
 
 module.exports = {
   logger,
   httpLogger,
   dbLogger,
-  logUtils
-}; 
+  logUtils,
+};

@@ -8,7 +8,7 @@ class PrismaManager {
         { emit: 'event', level: 'query' },
         { emit: 'event', level: 'info' },
         { emit: 'event', level: 'warn' },
-        { emit: 'event', level: 'error' }
+        { emit: 'event', level: 'error' },
       ],
     });
 
@@ -17,7 +17,7 @@ class PrismaManager {
       logger.debug('Query:', {
         query: e.query,
         params: e.params,
-        duration: `${e.duration}ms`
+        duration: `${e.duration}ms`,
       });
     });
 
@@ -61,7 +61,13 @@ class PrismaManager {
 
   // Метод для пагинации
   async paginate(model, options) {
-    const { page = 1, perPage = 10, where = {}, orderBy = {}, include = {} } = options;
+    const {
+      page = 1,
+      perPage = 10,
+      where = {},
+      orderBy = {},
+      include = {},
+    } = options;
     const skip = (page - 1) * perPage;
 
     try {
@@ -71,9 +77,9 @@ class PrismaManager {
           take: perPage,
           where,
           orderBy,
-          include
+          include,
         }),
-        this.prisma[model].count({ where })
+        this.prisma[model].count({ where }),
       ]);
 
       return {
@@ -82,8 +88,8 @@ class PrismaManager {
           total,
           page,
           perPage,
-          pageCount: Math.ceil(total / perPage)
-        }
+          pageCount: Math.ceil(total / perPage),
+        },
       };
     } catch (error) {
       logger.error(`Pagination error for ${model}:`, error);
@@ -115,7 +121,7 @@ class PrismaManager {
         logger.warn('Retrying database operation:', {
           attempt,
           maxRetries,
-          error: error.message
+          error: error.message,
         });
         await this.delay(Math.min(100 * Math.pow(2, attempt), 1000));
       }
@@ -125,11 +131,13 @@ class PrismaManager {
 
   // Проверка, можно ли повторить операцию
   isRetryableError(error) {
-    return error.code === 'P1000' || // Authentication failed
-           error.code === 'P1001' || // Can't reach database server
-           error.code === 'P1002' || // Connection timed out
-           error.code === 'P1008' || // Operations timed out
-           error.code === 'P1017';   // Server closed the connection
+    return (
+      error.code === 'P1000' || // Authentication failed
+      error.code === 'P1001' || // Can't reach database server
+      error.code === 'P1002' || // Connection timed out
+      error.code === 'P1008' || // Operations timed out
+      error.code === 'P1017'
+    ); // Server closed the connection
   }
 
   // Мягкое удаление
@@ -139,8 +147,8 @@ class PrismaManager {
         where: { id },
         data: {
           deletedAt: new Date(),
-          isDeleted: true
-        }
+          isDeleted: true,
+        },
       });
     } catch (error) {
       logger.error('Soft delete error:', error);
@@ -155,8 +163,8 @@ class PrismaManager {
         where: { id },
         data: {
           deletedAt: null,
-          isDeleted: false
-        }
+          isDeleted: false,
+        },
       });
     } catch (error) {
       logger.error('Restore error:', error);
@@ -168,11 +176,11 @@ class PrismaManager {
   async upsertMany(model, data, uniqueKey) {
     try {
       return await this.transaction(
-        data.map(item => 
+        data.map((item) =>
           this.prisma[model].upsert({
             where: { [uniqueKey]: item[uniqueKey] },
             create: item,
-            update: item
+            update: item,
           })
         )
       );
@@ -184,11 +192,11 @@ class PrismaManager {
 
   // Задержка для повторных попыток
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
 // Создаем единственный экземпляр
 const prismaManager = new PrismaManager();
 
-module.exports = prismaManager; 
+module.exports = prismaManager;

@@ -10,12 +10,12 @@ class UploadManager {
     this.uploadDir = path.join(process.cwd(), 'uploads');
     this.tempDir = path.join(process.cwd(), 'temp');
     this.maxFileSize = process.env.MAX_FILE_SIZE || 5 * 1024 * 1024; // 5MB default
-    
+
     this.allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
     this.allowedDocTypes = [
       'application/pdf',
       'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
 
     this.init();
@@ -40,13 +40,18 @@ class UploadManager {
       },
       filename: (req, file, cb) => {
         const uniqueSuffix = crypto.randomBytes(16).toString('hex');
-        cb(null, `${Date.now()}-${uniqueSuffix}${path.extname(file.originalname)}`);
-      }
+        cb(
+          null,
+          `${Date.now()}-${uniqueSuffix}${path.extname(file.originalname)}`
+        );
+      },
     });
 
     const fileFilter = (req, file, cb) => {
-      const allowedTypes = options.allowedTypes || 
-        [...this.allowedImageTypes, ...this.allowedDocTypes];
+      const allowedTypes = options.allowedTypes || [
+        ...this.allowedImageTypes,
+        ...this.allowedDocTypes,
+      ];
 
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -59,8 +64,8 @@ class UploadManager {
       storage,
       fileFilter,
       limits: {
-        fileSize: options.maxSize || this.maxFileSize
-      }
+        fileSize: options.maxSize || this.maxFileSize,
+      },
     });
   }
 
@@ -68,18 +73,18 @@ class UploadManager {
   async processImage(file, options = {}) {
     try {
       const image = sharp(file.path);
-      
+
       if (options.resize) {
         image.resize(options.resize.width, options.resize.height, {
           fit: options.resize.fit || 'cover',
-          position: options.resize.position || 'center'
+          position: options.resize.position || 'center',
         });
       }
 
       if (options.format) {
         image.toFormat(options.format, {
           quality: options.quality || 80,
-          progressive: true
+          progressive: true,
         });
       }
 
@@ -93,7 +98,7 @@ class UploadManager {
 
       return {
         path: outputPath,
-        filename: path.basename(outputPath)
+        filename: path.basename(outputPath),
       };
     } catch (error) {
       logger.error('Error processing image:', error);
@@ -112,7 +117,7 @@ class UploadManager {
 
       return {
         path: targetPath,
-        filename: file.filename
+        filename: file.filename,
       };
     } catch (error) {
       logger.error('Error moving file:', error);
@@ -134,7 +139,8 @@ class UploadManager {
   }
 
   // Очистка временных файлов
-  async cleanupTemp(maxAge = 24 * 60 * 60 * 1000) { // 24 hours default
+  async cleanupTemp(maxAge = 24 * 60 * 60 * 1000) {
+    // 24 hours default
     try {
       const files = await fs.readdir(this.tempDir);
       const now = Date.now();
@@ -155,4 +161,4 @@ class UploadManager {
   }
 }
 
-module.exports = new UploadManager(); 
+module.exports = new UploadManager();

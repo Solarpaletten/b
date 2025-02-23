@@ -10,11 +10,11 @@ async function createWarehouse() {
         address: '123 Storage Street',
         status: 'Active',
         client_id: 1, // ID нашего тестового клиента
-        user_id: 1,   // ID админа
-        responsible_person_id: 1 // ID админа как ответственного лица
-      }
+        user_id: 1, // ID админа
+        responsible_person_id: 1, // ID админа как ответственного лица
+      },
     });
-    
+
     console.log('Создан новый склад:', newWarehouse);
   } catch (error) {
     console.error('Ошибка при создании склада:', error);
@@ -23,4 +23,4 @@ async function createWarehouse() {
   }
 }
 
-createWarehouse(); 
+createWarehouse();

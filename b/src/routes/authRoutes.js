@@ -8,8 +8,8 @@ const prismaManager = require('../utils/create/prismaManager');
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/me', auth, authController.getCurrentUser);
+router.post('/validate-token', authController.validateToken);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
-
 
 module.exports = router;

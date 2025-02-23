@@ -22,8 +22,8 @@ class GeoManager {
         params: {
           q: address,
           key: this.geocodingApiKey,
-          limit: 1
-        }
+          limit: 1,
+        },
       });
 
       if (response.data.results.length === 0) {
@@ -33,7 +33,7 @@ class GeoManager {
       const result = {
         lat: response.data.results[0].geometry.lat,
         lng: response.data.results[0].geometry.lng,
-        formatted: response.data.results[0].formatted
+        formatted: response.data.results[0].formatted,
       };
 
       // Сохраняем в кэш
@@ -83,9 +83,9 @@ class GeoManager {
   // Оптимизация маршрута
   optimizeRoute(points) {
     try {
-      const features = points.map(p => turf.point([p.lng, p.lat]));
+      const features = points.map((p) => turf.point([p.lng, p.lat]));
       const collection = turf.featureCollection(features);
-      
+
       // Жадный алгоритм для приближенного решения задачи коммивояжера
       const route = [0];
       const unvisited = new Set(points.map((_, i) => i).slice(1));
@@ -107,7 +107,7 @@ class GeoManager {
         unvisited.delete(nearest);
       }
 
-      return route.map(i => points[i]);
+      return route.map((i) => points[i]);
     } catch (error) {
       logger.error('Route optimization error:', error);
       throw error;
@@ -117,12 +117,12 @@ class GeoManager {
   // Кластеризация точек
   clusterPoints(points, maxDistance) {
     try {
-      const features = points.map(p => turf.point([p.lng, p.lat]));
+      const features = points.map((p) => turf.point([p.lng, p.lat]));
       const collection = turf.featureCollection(features);
-      
+
       return turf.clustersKmeans(collection, {
         numberOfClusters: Math.ceil(points.length / 10),
-        mutate: true
+        mutate: true,
       });
     } catch (error) {
       logger.error('Clustering error:', error);
@@ -142,8 +142,8 @@ class GeoManager {
         params: {
           q: `${lat}+${lng}`,
           key: this.geocodingApiKey,
-          limit: 1
-        }
+          limit: 1,
+        },
       });
 
       if (response.data.results.length === 0) {
@@ -152,7 +152,7 @@ class GeoManager {
 
       const result = {
         address: response.data.results[0].formatted,
-        components: response.data.results[0].components
+        components: response.data.results[0].components,
       };
 
       this.cache.set(cacheKey, result);
@@ -164,4 +164,4 @@ class GeoManager {
   }
 }
 
-module.exports = new GeoManager(); 
+module.exports = new GeoManager();

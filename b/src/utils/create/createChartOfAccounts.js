@@ -10,7 +10,7 @@ async function createChartOfAccounts() {
         type: 'asset',
         account_type: 'current_asset',
         is_active: true,
-        user_id: 1
+        user_id: 1,
       },
       {
         code: '1100',
@@ -18,7 +18,7 @@ async function createChartOfAccounts() {
         type: 'asset',
         account_type: 'current_asset',
         is_active: true,
-        user_id: 1
+        user_id: 1,
       },
       {
         code: '2000',
@@ -26,7 +26,7 @@ async function createChartOfAccounts() {
         type: 'asset',
         account_type: 'current_asset',
         is_active: true,
-        user_id: 1
+        user_id: 1,
       },
       {
         code: '3000',
@@ -34,7 +34,7 @@ async function createChartOfAccounts() {
         type: 'asset',
         account_type: 'current_asset',
         is_active: true,
-        user_id: 1
+        user_id: 1,
       },
       {
         code: '4000',
@@ -42,7 +42,7 @@ async function createChartOfAccounts() {
         type: 'liability',
         account_type: 'current_liability',
         is_active: true,
-        user_id: 1
+        user_id: 1,
       },
       {
         code: '5000',
@@ -50,17 +50,16 @@ async function createChartOfAccounts() {
         type: 'revenue',
         account_type: 'income',
         is_active: true,
-        user_id: 1
-      }
+        user_id: 1,
+      },
     ];
 
     for (const account of accounts) {
       const newAccount = await prisma.chart_of_accounts.create({
-        data: account
+        data: account,
       });
       console.log('Создан новый счет:', newAccount);
     }
-
   } catch (error) {
     console.error('Ошибка при создании плана счетов:', error);
   } finally {
@@ -68,4 +67,4 @@ async function createChartOfAccounts() {
   }
 }
 
-createChartOfAccounts(); 
+createChartOfAccounts();

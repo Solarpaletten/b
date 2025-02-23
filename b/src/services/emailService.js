@@ -9,11 +9,11 @@ class EmailService {
       secure: true,
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        pass: process.env.SMTP_PASS,
       },
       tls: {
-        rejectUnauthorized: false
-      }
+        rejectUnauthorized: false,
+      },
     });
   }
 
@@ -33,9 +33,9 @@ class EmailService {
             <p>If you didn't request this verification, please ignore this email.</p>
           </div>
         `,
-        text: `Your verification token is: ${token}`
+        text: `Your verification token is: ${token}`,
       });
-      
+
       console.log('Verification email sent successfully');
       return result;
     } catch (error) {
@@ -66,9 +66,9 @@ class EmailService {
             <p>If you didn't request this password reset, please contact support immediately.</p>
           </div>
         `,
-        text: `Your temporary password is: ${tempPassword}\n\nIMPORTANT: Please change this password immediately after logging in.`
+        text: `Your temporary password is: ${tempPassword}\n\nIMPORTANT: Please change this password immediately after logging in.`,
       });
-      
+
       console.log('Temporary password email sent successfully');
       return result;
     } catch (error) {
@@ -95,9 +95,9 @@ class EmailService {
             <p>If you have any questions, please don't hesitate to contact our support team.</p>
           </div>
         `,
-        text: `Congratulations! Your company "${companyName}" has been successfully registered in our system.`
+        text: `Congratulations! Your company "${companyName}" has been successfully registered in our system.`,
       });
-      
+
       console.log('Company creation email sent successfully');
       return result;
     } catch (error) {

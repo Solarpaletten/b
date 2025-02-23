@@ -1,11 +1,18 @@
-// src/components/auth/ProtectedRoute.tsx
-import { Navigate } from 'react-router-dom';
+import React, { ReactNode } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) =>{
+interface ProtectedRouteProps {
+  children?: ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const token = localStorage.getItem('token');
 
   if (!token) {
-   return <Navigate to="/login" />;
+    return <Navigate to="/auth/login" replace />;
   }
-  return <>{children}</>;
+
+  return children ? children : <Outlet />;
 };
+
+export { ProtectedRoute };

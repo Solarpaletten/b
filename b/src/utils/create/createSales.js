@@ -16,7 +16,7 @@ async function createSales() {
         status: 'completed',
         invoice_type: 'standard',
         invoice_number: 'INV-2025-001',
-        vat_rate: 20.00
+        vat_rate: 20.0,
       },
       {
         doc_number: 'INV-2025-002',
@@ -30,17 +30,16 @@ async function createSales() {
         status: 'completed',
         invoice_type: 'standard',
         invoice_number: 'INV-2025-002',
-        vat_rate: 20.00
-      }
+        vat_rate: 20.0,
+      },
     ];
 
     for (const sale of sales) {
       const newSale = await prisma.sales.create({
-        data: sale
+        data: sale,
       });
       console.log('Создана новая продажа:', newSale);
     }
-
   } catch (error) {
     console.error('Ошибка при создании продаж:', error);
   } finally {
@@ -48,4 +47,4 @@ async function createSales() {
   }
 }
 
-createSales(); 
+createSales();

@@ -11,7 +11,8 @@ class EncryptionManager {
     this.encoding = 'hex';
 
     // Получаем ключ шифрования из переменных окружения или генерируем новый
-    this.secretKey = process.env.ENCRYPTION_KEY || 
+    this.secretKey =
+      process.env.ENCRYPTION_KEY ||
       crypto.randomBytes(this.keyLength).toString(this.encoding);
   }
 
@@ -55,7 +56,7 @@ class EncryptionManager {
         salt: salt.toString(this.encoding),
         iv: iv.toString(this.encoding),
         tag: tag.toString(this.encoding),
-        data: encrypted
+        data: encrypted,
       };
 
       return JSON.stringify(encryptedData);
@@ -71,7 +72,10 @@ class EncryptionManager {
       const { salt, iv, tag, data } = JSON.parse(encryptedPackage);
       const key = customKey || this.secretKey;
 
-      const derivedKey = await this.generateKey(key, Buffer.from(salt, this.encoding));
+      const derivedKey = await this.generateKey(
+        key,
+        Buffer.from(salt, this.encoding)
+      );
       const decipher = crypto.createDecipheriv(
         this.algorithm,
         derivedKey,
@@ -98,17 +102,11 @@ class EncryptionManager {
   async hash(data, salt = null) {
     try {
       const useSalt = salt || crypto.randomBytes(this.saltLength);
-      const hash = crypto.pbkdf2Sync(
-        data,
-        useSalt,
-        100000,
-        64,
-        'sha512'
-      );
+      const hash = crypto.pbkdf2Sync(data, useSalt, 100000, 64, 'sha512');
 
       return {
         hash: hash.toString(this.encoding),
-        salt: useSalt.toString(this.encoding)
+        salt: useSalt.toString(this.encoding),
       };
     } catch (error) {
       logger.error('Hashing error:', error);
@@ -119,7 +117,10 @@ class EncryptionManager {
   // Проверка хеша
   async verifyHash(data, hash, salt) {
     try {
-      const verificationHash = await this.hash(data, Buffer.from(salt, this.encoding));
+      const verificationHash = await this.hash(
+        data,
+        Buffer.from(salt, this.encoding)
+      );
       return verificationHash.hash === hash;
     } catch (error) {
       logger.error('Hash verification error:', error);
@@ -138,4 +139,4 @@ class EncryptionManager {
   }
 }
 
-module.exports = new EncryptionManager(); 
+module.exports = new EncryptionManager();

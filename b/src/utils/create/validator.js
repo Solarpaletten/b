@@ -10,13 +10,13 @@ const schemas = {
   date: Joi.date().iso(),
   currency: Joi.string().valid('EUR', 'USD'),
   price: Joi.number().precision(2).positive(),
-  
+
   // Пользователь
   user: Joi.object({
     email: Joi.string().email().required(),
     username: Joi.string().min(3).max(50).required(),
     password: Joi.string().min(6).max(100).required(),
-    role: Joi.string().valid('admin', 'user', 'manager')
+    role: Joi.string().valid('admin', 'user', 'manager'),
   }),
 
   // Клиент
@@ -27,7 +27,7 @@ const schemas = {
     type: Joi.string().valid('INDIVIDUAL', 'COMPANY').required(),
     clientType: Joi.string().valid('BOTH', 'CUSTOMER', 'SUPPLIER').required(),
     code: Joi.string().max(50),
-    vat_code: Joi.string().max(50)
+    vat_code: Joi.string().max(50),
   }),
 
   // Продукт
@@ -37,7 +37,7 @@ const schemas = {
     description: Joi.string(),
     unit: Joi.string().max(20).required(),
     price: Joi.number().precision(2).positive().required(),
-    currency: Joi.string().valid('EUR', 'USD').required()
+    currency: Joi.string().valid('EUR', 'USD').required(),
   }),
 
   // Продажа/Покупка
@@ -51,8 +51,8 @@ const schemas = {
     status: Joi.string().max(20),
     invoice_type: Joi.string().max(50),
     invoice_number: Joi.string().max(50).required(),
-    vat_rate: Joi.number().precision(2).min(0).max(100)
-  })
+    vat_rate: Joi.number().precision(2).min(0).max(100),
+  }),
 };
 
 // Функция валидации
@@ -60,13 +60,13 @@ const validate = (schema, data) => {
   try {
     const { error, value } = schema.validate(data, {
       abortEarly: false,
-      stripUnknown: true
+      stripUnknown: true,
     });
 
     if (error) {
-      const errors = error.details.map(detail => ({
+      const errors = error.details.map((detail) => ({
         field: detail.path.join('.'),
-        message: detail.message
+        message: detail.message,
       }));
 
       logger.debug('Validation failed:', { errors });
@@ -88,7 +88,7 @@ const validateMiddleware = (schema) => {
     if (!isValid) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: errors
+        details: errors,
       });
     }
 
@@ -100,5 +100,5 @@ const validateMiddleware = (schema) => {
 module.exports = {
   schemas,
   validate,
-  validateMiddleware
-}; 
+  validateMiddleware,
+};

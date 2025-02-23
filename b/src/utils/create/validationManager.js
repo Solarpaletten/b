@@ -11,14 +11,14 @@ class ValidationManager {
           email: Joi.string().email().required(),
           password: Joi.string().min(8).required(),
           name: Joi.string().min(2).max(50).required(),
-          role: Joi.string().valid('admin', 'user', 'manager')
+          role: Joi.string().valid('admin', 'user', 'manager'),
         }),
         update: Joi.object({
           email: Joi.string().email(),
           password: Joi.string().min(8),
           name: Joi.string().min(2).max(50),
-          role: Joi.string().valid('admin', 'user', 'manager')
-        })
+          role: Joi.string().valid('admin', 'user', 'manager'),
+        }),
       },
 
       // Продукт
@@ -28,30 +28,32 @@ class ValidationManager {
           description: Joi.string(),
           price: Joi.number().positive().required(),
           category: Joi.string().required(),
-          stock: Joi.number().integer().min(0)
+          stock: Joi.number().integer().min(0),
         }),
         update: Joi.object({
           name: Joi.string(),
           description: Joi.string(),
           price: Joi.number().positive(),
           category: Joi.string(),
-          stock: Joi.number().integer().min(0)
-        })
+          stock: Joi.number().integer().min(0),
+        }),
       },
 
       // Заказ
       order: {
         create: Joi.object({
           userId: Joi.number().required(),
-          products: Joi.array().items(
-            Joi.object({
-              id: Joi.number().required(),
-              quantity: Joi.number().integer().min(1).required()
-            })
-          ).required(),
+          products: Joi.array()
+            .items(
+              Joi.object({
+                id: Joi.number().required(),
+                quantity: Joi.number().integer().min(1).required(),
+              })
+            )
+            .required(),
           shippingAddress: Joi.string().required(),
-          paymentMethod: Joi.string().required()
-        })
+          paymentMethod: Joi.string().required(),
+        }),
       },
 
       // Общие правила
@@ -59,13 +61,13 @@ class ValidationManager {
         id: Joi.number().positive().required(),
         pagination: Joi.object({
           page: Joi.number().integer().min(1),
-          limit: Joi.number().integer().min(1).max(100)
+          limit: Joi.number().integer().min(1).max(100),
         }),
         dateRange: Joi.object({
           startDate: Joi.date().iso(),
-          endDate: Joi.date().iso().min(Joi.ref('startDate'))
-        })
-      }
+          endDate: Joi.date().iso().min(Joi.ref('startDate')),
+        }),
+      },
     };
   }
 
@@ -74,13 +76,13 @@ class ValidationManager {
     try {
       const { error, value } = schema.validate(data, {
         abortEarly: false,
-        stripUnknown: true
+        stripUnknown: true,
       });
 
       if (error) {
-        const errors = error.details.map(detail => ({
+        const errors = error.details.map((detail) => ({
           field: detail.path.join('.'),
-          message: detail.message
+          message: detail.message,
         }));
 
         logger.debug('Validation failed:', { errors });
@@ -107,7 +109,7 @@ class ValidationManager {
       if (!isValid) {
         return res.status(400).json({
           error: 'Validation failed',
-          details: errors
+          details: errors,
         });
       }
 
@@ -138,4 +140,4 @@ class ValidationManager {
   }
 }
 
-module.exports = new ValidationManager(); 
+module.exports = new ValidationManager();

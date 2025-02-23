@@ -7,7 +7,7 @@ class TextAnalyzer {
     this.tokenizer = new natural.WordTokenizer();
     this.stemmer = natural.PorterStemmer;
     this.tfidf = new natural.TfIdf();
-    
+
     // Инициализация классификатора
     this.classifier = new natural.BayesClassifier();
   }
@@ -35,7 +35,7 @@ class TextAnalyzer {
   // Стемминг слов
   stem(tokens) {
     try {
-      return tokens.map(token => this.stemmer.stem(token));
+      return tokens.map((token) => this.stemmer.stem(token));
     } catch (error) {
       logger.error('Stemming error:', error);
       throw error;
@@ -56,7 +56,7 @@ class TextAnalyzer {
 
       return {
         score,
-        sentiment: score > 0 ? 'positive' : score < 0 ? 'negative' : 'neutral'
+        sentiment: score > 0 ? 'positive' : score < 0 ? 'negative' : 'neutral',
       };
     } catch (error) {
       logger.error('Sentiment analysis error:', error);
@@ -74,12 +74,10 @@ class TextAnalyzer {
       this.tfidf.addDocument(stems);
       const terms = this.tfidf.listTerms(0);
 
-      return terms
-        .slice(0, options.limit || 10)
-        .map(term => ({
-          word: term.term,
-          score: term.tfidf
-        }));
+      return terms.slice(0, options.limit || 10).map((term) => ({
+        word: term.term,
+        score: term.tfidf,
+      }));
     } catch (error) {
       logger.error('Keyword extraction error:', error);
       throw error;
@@ -89,7 +87,7 @@ class TextAnalyzer {
   // Обучение классификатора
   trainClassifier(data) {
     try {
-      data.forEach(item => {
+      data.forEach((item) => {
         this.classifier.addDocument(item.text, item.category);
       });
       this.classifier.train();
@@ -112,19 +110,11 @@ class TextAnalyzer {
   // Поиск похожих текстов
   findSimilar(texts, query, options = {}) {
     try {
-      const queryTokens = this.stem(
-        this.removeStopwords(
-          this.tokenize(query)
-        )
-      );
+      const queryTokens = this.stem(this.removeStopwords(this.tokenize(query)));
 
       return texts
-        .map(text => {
-          const tokens = this.stem(
-            this.removeStopwords(
-              this.tokenize(text)
-            )
-          );
+        .map((text) => {
+          const tokens = this.stem(this.removeStopwords(this.tokenize(text)));
           const similarity = natural.JaroWinklerDistance(
             queryTokens.join(' '),
             tokens.join(' '),
@@ -144,12 +134,8 @@ class TextAnalyzer {
   summarize(text, options = {}) {
     try {
       const sentences = natural.SentenceTokenizer.tokenize(text);
-      const tokens = sentences.map(sentence => 
-        this.stem(
-          this.removeStopwords(
-            this.tokenize(sentence)
-          )
-        )
+      const tokens = sentences.map((sentence) =>
+        this.stem(this.removeStopwords(this.tokenize(sentence)))
       );
 
       // Вычисляем важность предложений
@@ -157,7 +143,7 @@ class TextAnalyzer {
         const words = tokens[i];
         return {
           sentence,
-          score: words.length ? this.tfidf.tfidf(words.join(' '), 0) : 0
+          score: words.length ? this.tfidf.tfidf(words.join(' '), 0) : 0,
         };
       });
 
@@ -165,7 +151,7 @@ class TextAnalyzer {
       return importance
         .sort((a, b) => b.score - a.score)
         .slice(0, options.sentences || 3)
-        .map(item => item.sentence)
+        .map((item) => item.sentence)
         .join(' ');
     } catch (error) {
       logger.error('Summarization error:', error);
@@ -174,4 +160,4 @@ class TextAnalyzer {
   }
 }
 
-module.exports = new TextAnalyzer(); 
+module.exports = new TextAnalyzer();

@@ -1,4 +1,4 @@
-// generateHash.js 
+// generateHash.js
 const bcrypt = require('bcryptjs');
 
 const password = 'pass123';

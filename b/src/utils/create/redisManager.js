@@ -8,7 +8,7 @@ class RedisManager {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
-      maxRetriesPerRequest: 3
+      maxRetriesPerRequest: 3,
     });
 
     this.subscriber = new Redis(process.env.REDIS_URL);
@@ -132,10 +132,16 @@ class RedisManager {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
         await this.client.del(...keys);
-        logger.debug('Redis pattern deletion:', { pattern, count: keys.length });
+        logger.debug('Redis pattern deletion:', {
+          pattern,
+          count: keys.length,
+        });
       }
     } catch (error) {
-      logger.error('Redis pattern deletion error:', { pattern, error: error.message });
+      logger.error('Redis pattern deletion error:', {
+        pattern,
+        error: error.message,
+      });
       throw error;
     }
   }
@@ -152,4 +158,4 @@ class RedisManager {
   }
 }
 
-module.exports = new RedisManager(); 
+module.exports = new RedisManager();

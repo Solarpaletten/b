@@ -7,7 +7,7 @@ class WebSocketManager {
     this.wss = new WebSocket.Server({ server });
     this.clients = new Map();
     this.channels = new Map();
-    
+
     this.initialize();
   }
 
@@ -19,11 +19,14 @@ class WebSocketManager {
         ws,
         channels: new Set(),
         ip: req.socket.remoteAddress,
-        connectTime: new Date()
+        connectTime: new Date(),
       };
 
       this.clients.set(clientId, clientInfo);
-      logger.info('WebSocket client connected:', { clientId, ip: clientInfo.ip });
+      logger.info('WebSocket client connected:', {
+        clientId,
+        ip: clientInfo.ip,
+      });
 
       // Обработка сообщений
       ws.on('message', (message) => {
@@ -31,7 +34,10 @@ class WebSocketManager {
           const data = JSON.parse(message);
           this.handleMessage(clientId, data);
         } catch (error) {
-          logger.error('WebSocket message error:', { clientId, error: error.message });
+          logger.error('WebSocket message error:', {
+            clientId,
+            error: error.message,
+          });
           this.sendError(ws, 'Invalid message format');
         }
       });
@@ -43,13 +49,16 @@ class WebSocketManager {
 
       // Обработка ошибок
       ws.on('error', (error) => {
-        logger.error('WebSocket client error:', { clientId, error: error.message });
+        logger.error('WebSocket client error:', {
+          clientId,
+          error: error.message,
+        });
       });
 
       // Отправка приветственного сообщения
       this.send(ws, {
         type: 'welcome',
-        data: { clientId }
+        data: { clientId },
       });
     });
 
@@ -87,7 +96,7 @@ class WebSocketManager {
     const client = this.clients.get(clientId);
     if (!client) return;
 
-    channelNames.forEach(channelName => {
+    channelNames.forEach((channelName) => {
       if (!this.channels.has(channelName)) {
         this.channels.set(channelName, new Set());
       }
@@ -97,7 +106,7 @@ class WebSocketManager {
 
     this.send(client.ws, {
       type: 'subscribed',
-      channels: Array.from(client.channels)
+      channels: Array.from(client.channels),
     });
   }
 
@@ -106,7 +115,7 @@ class WebSocketManager {
     const client = this.clients.get(clientId);
     if (!client) return;
 
-    channelNames.forEach(channelName => {
+    channelNames.forEach((channelName) => {
       const channel = this.channels.get(channelName);
       if (channel) {
         channel.delete(clientId);
@@ -119,7 +128,7 @@ class WebSocketManager {
 
     this.send(client.ws, {
       type: 'unsubscribed',
-      channels: Array.from(client.channels)
+      channels: Array.from(client.channels),
     });
   }
 
@@ -128,7 +137,7 @@ class WebSocketManager {
     const subscribers = this.channels.get(channel);
     if (!subscribers) return;
 
-    subscribers.forEach(clientId => {
+    subscribers.forEach((clientId) => {
       if (clientId !== excludeClientId) {
         const client = this.clients.get(clientId);
         if (client && client.ws.readyState === WebSocket.OPEN) {
@@ -149,7 +158,7 @@ class WebSocketManager {
   sendError(ws, error) {
     this.send(ws, {
       type: 'error',
-      error
+      error,
     });
   }
 
@@ -159,7 +168,7 @@ class WebSocketManager {
     if (!client) return;
 
     // Удаляем клиента из всех каналов
-    client.channels.forEach(channelName => {
+    client.channels.forEach((channelName) => {
       const channel = this.channels.get(channelName);
       if (channel) {
         channel.delete(clientId);
@@ -189,10 +198,10 @@ class WebSocketManager {
       totalChannels: this.channels.size,
       channels: Array.from(this.channels.entries()).map(([name, clients]) => ({
         name,
-        subscribers: clients.size
-      }))
+        subscribers: clients.size,
+      })),
     };
   }
 }
 
-module.exports = WebSocketManager; 
+module.exports = WebSocketManager;

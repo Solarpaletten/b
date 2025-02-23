@@ -11,10 +11,12 @@ const baseLimiter = rateLimit({
   handler: (req, res) => {
     logger.warn('Rate limit exceeded:', {
       ip: req.ip,
-      path: req.path
+      path: req.path,
     });
-    res.status(429).json({ error: 'Too many requests, please try again later' });
-  }
+    res
+      .status(429)
+      .json({ error: 'Too many requests, please try again later' });
+  },
 });
 
 // Строгий лимитер для аутентификации
@@ -25,13 +27,15 @@ const authLimiter = rateLimit({
   handler: (req, res) => {
     logger.warn('Auth rate limit exceeded:', {
       ip: req.ip,
-      email: req.body.email
+      email: req.body.email,
     });
-    res.status(429).json({ error: 'Too many login attempts, please try again later' });
-  }
+    res
+      .status(429)
+      .json({ error: 'Too many login attempts, please try again later' });
+  },
 });
 
 module.exports = {
   baseLimiter,
-  authLimiter
-}; 
+  authLimiter,
+};

@@ -35,28 +35,28 @@ class DateManager {
   // Получение начала и конца периода
   getPeriod(period = 'month', date = null) {
     const currentDate = date ? dayjs(date) : this.now();
-    
+
     const periods = {
       day: {
         start: currentDate.startOf('day'),
-        end: currentDate.endOf('day')
+        end: currentDate.endOf('day'),
       },
       week: {
         start: currentDate.startOf('week'),
-        end: currentDate.endOf('week')
+        end: currentDate.endOf('week'),
       },
       month: {
         start: currentDate.startOf('month'),
-        end: currentDate.endOf('month')
+        end: currentDate.endOf('month'),
       },
       quarter: {
         start: currentDate.startOf('quarter'),
-        end: currentDate.endOf('quarter')
+        end: currentDate.endOf('quarter'),
       },
       year: {
         start: currentDate.startOf('year'),
-        end: currentDate.endOf('year')
-      }
+        end: currentDate.endOf('year'),
+      },
     };
 
     return periods[period] || periods.month;
@@ -109,4 +109,4 @@ class DateManager {
   }
 }
 
-module.exports = new DateManager(); 
+module.exports = new DateManager();

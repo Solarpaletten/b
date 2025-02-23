@@ -15,13 +15,14 @@ class StreamManager {
         objectMode: options.objectMode || true,
         transform(chunk, encoding, callback) {
           try {
-            const transformed = options.transform ? 
-              options.transform(chunk) : chunk;
+            const transformed = options.transform
+              ? options.transform(chunk)
+              : chunk;
             callback(null, transformed);
           } catch (error) {
             callback(error);
           }
-        }
+        },
       });
     } catch (error) {
       logger.error('Error creating transform stream:', error);
@@ -33,7 +34,7 @@ class StreamManager {
   createFilter(predicate) {
     try {
       return this.createTransform({
-        transform: (chunk) => predicate(chunk) ? chunk : null
+        transform: (chunk) => (predicate(chunk) ? chunk : null),
       });
     } catch (error) {
       logger.error('Error creating filter stream:', error);
@@ -49,7 +50,7 @@ class StreamManager {
         objectMode: true,
         transform(chunk, encoding, callback) {
           buffer.push(chunk);
-          
+
           if (buffer.length >= (options.batchSize || 100)) {
             const result = options.aggregate(buffer);
             buffer = [];
@@ -65,7 +66,7 @@ class StreamManager {
           } else {
             callback();
           }
-        }
+        },
       });
     } catch (error) {
       logger.error('Error creating aggregator stream:', error);
@@ -116,7 +117,7 @@ class StreamManager {
             return JSON.parse(chunk);
           }
           return chunk;
-        }
+        },
       });
     } catch (error) {
       logger.error('Error creating JSON parser stream:', error);
@@ -128,7 +129,7 @@ class StreamManager {
   createJsonStringifier() {
     try {
       return this.createTransform({
-        transform: (chunk) => JSON.stringify(chunk)
+        transform: (chunk) => JSON.stringify(chunk),
       });
     } catch (error) {
       logger.error('Error creating JSON stringifier stream:', error);
@@ -137,7 +138,7 @@ class StreamManager {
   }
 
   // Создание потока для дедупликации
-  createDeduplicator(keySelector = item => item) {
+  createDeduplicator(keySelector = (item) => item) {
     try {
       const seen = new Set();
       return this.createTransform({
@@ -148,7 +149,7 @@ class StreamManager {
             return chunk;
           }
           return null;
-        }
+        },
       });
     } catch (error) {
       logger.error('Error creating deduplicator stream:', error);
@@ -186,7 +187,7 @@ class StreamManager {
               callback(null, chunk);
             }, delay);
           }
-        }
+        },
       });
     } catch (error) {
       logger.error('Error creating rate limiter stream:', error);
@@ -195,4 +196,4 @@ class StreamManager {
   }
 }
 
-module.exports = new StreamManager(); 
+module.exports = new StreamManager();

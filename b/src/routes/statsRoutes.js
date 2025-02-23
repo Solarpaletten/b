@@ -13,24 +13,24 @@ router.get('/database-stats', async (req, res) => {
       bankOperations: await prismaManager.prisma.bank_operations.count(),
       warehouses: await prismaManager.prisma.warehouses.count(),
       chartOfAccounts: await prismaManager.prisma.chart_of_accounts.count(),
-      docSettlements: await prismaManager.prisma.doc_settlement.count()
+      docSettlements: await prismaManager.prisma.doc_settlement.count(),
     };
 
     const tables = Object.entries(totalStats).map(([name, count]) => ({
       name,
-      recordCount: count
+      recordCount: count,
     }));
 
     res.json({
       connected: true,
       tables,
-      totalStats
+      totalStats,
     });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       connected: false,
-      error: 'Failed to fetch statistics' 
+      error: 'Failed to fetch statistics',
     });
   }
 });
@@ -40,7 +40,7 @@ router.get('/sales-stats', async (req, res) => {
   try {
     const salesStats = await prismaManager.prisma.sales.groupBy({
       by: ['status'],
-      _count: true
+      _count: true,
     });
     res.json(salesStats);
   } catch (error) {
@@ -53,7 +53,7 @@ router.get('/purchase-stats', async (req, res) => {
   try {
     const purchaseStats = await prismaManager.prisma.purchases.groupBy({
       by: ['status'],
-      _count: true
+      _count: true,
     });
     res.json(purchaseStats);
   } catch (error) {
@@ -67,8 +67,8 @@ router.get('/bank-stats', async (req, res) => {
     const bankStats = await prismaManager.prisma.bank_operations.groupBy({
       by: ['type'],
       _sum: {
-        amount: true
-      }
+        amount: true,
+      },
     });
     res.json(bankStats);
   } catch (error) {
@@ -83,10 +83,10 @@ router.get('/warehouse-stats', async (req, res) => {
       include: {
         _count: {
           select: {
-            products: true
-          }
-        }
-      }
+            products: true,
+          },
+        },
+      },
     });
     res.json(warehouseStats);
   } catch (error) {
@@ -102,15 +102,15 @@ router.get('/top-clients', async (req, res) => {
       include: {
         sales: {
           select: {
-            totalAmount: true
-          }
-        }
+            totalAmount: true,
+          },
+        },
       },
       orderBy: {
         sales: {
-          _count: 'desc'
-        }
-      }
+          _count: 'desc',
+        },
+      },
     });
     res.json(topClients);
   } catch (error) {
@@ -124,19 +124,19 @@ router.get('/financial-summary', async (req, res) => {
     const summary = {
       totalSales: await prismaManager.prisma.sales.aggregate({
         _sum: {
-          totalAmount: true
-        }
+          totalAmount: true,
+        },
       }),
       totalPurchases: await prismaManager.prisma.purchases.aggregate({
         _sum: {
-          totalAmount: true
-        }
+          totalAmount: true,
+        },
       }),
       bankBalance: await prismaManager.prisma.bank_operations.aggregate({
         _sum: {
-          amount: true
-        }
-      })
+          amount: true,
+        },
+      }),
     };
     res.json(summary);
   } catch (error) {
@@ -150,16 +150,16 @@ router.get('/documents-summary', async (req, res) => {
     const summary = {
       salesDocuments: await prismaManager.prisma.sales.groupBy({
         by: ['status'],
-        _count: true
+        _count: true,
       }),
       purchaseDocuments: await prismaManager.prisma.purchases.groupBy({
         by: ['status'],
-        _count: true
+        _count: true,
       }),
       settlementDocuments: await prismaManager.prisma.doc_settlement.groupBy({
         by: ['status'],
-        _count: true
-      })
+        _count: true,
+      }),
     };
     res.json(summary);
   } catch (error) {
@@ -178,37 +178,41 @@ router.get('/warehouse-detailed', async (req, res) => {
             product: {
               select: {
                 name: true,
-                price: true
-              }
-            }
-          }
+                price: true,
+              },
+            },
+          },
         },
         responsible_person: {
           select: {
             username: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
-    
-    const formattedStats = warehouseStats.map(warehouse => ({
+
+    const formattedStats = warehouseStats.map((warehouse) => ({
       id: warehouse.id,
       name: warehouse.name,
       responsiblePerson: warehouse.responsible_person,
       totalProducts: warehouse.products.length,
-      totalValue: warehouse.products.reduce((sum, item) => 
-        sum + (item.quantity * item.product.price), 0),
-      productsSummary: warehouse.products.map(item => ({
+      totalValue: warehouse.products.reduce(
+        (sum, item) => sum + item.quantity * item.product.price,
+        0
+      ),
+      productsSummary: warehouse.products.map((item) => ({
         name: item.product.name,
         quantity: item.quantity,
-        value: item.quantity * item.product.price
-      }))
+        value: item.quantity * item.product.price,
+      })),
     }));
-    
+
     res.json(formattedStats);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch detailed warehouse statistics' });
+    res
+      .status(500)
+      .json({ error: 'Failed to fetch detailed warehouse statistics' });
   }
 });
 

@@ -7,7 +7,7 @@ class MediaManager {
   constructor() {
     this.outputDir = path.join(process.cwd(), 'media');
     this.tempDir = path.join(process.cwd(), 'temp', 'media');
-    
+
     // Устанавливаем пути к ffmpeg
     if (process.env.FFMPEG_PATH) {
       ffmpeg.setFfmpegPath(process.env.FFMPEG_PATH);
@@ -124,7 +124,7 @@ class MediaManager {
             timestamps: [options.timestamp || '00:00:01'],
             filename: filename,
             folder: this.outputDir,
-            size: options.size || '320x240'
+            size: options.size || '320x240',
           })
           .on('end', () => {
             logger.info('Thumbnail creation completed:', { outputPath });
@@ -176,7 +176,7 @@ class MediaManager {
       const listPath = path.join(this.tempDir, 'files.txt');
 
       // Создаем файл со списком видео для объединения
-      const fileList = inputPaths.map(p => `file '${p}'`).join('\n');
+      const fileList = inputPaths.map((p) => `file '${p}'`).join('\n');
       await fs.writeFile(listPath, fileList);
 
       return new Promise((resolve, reject) => {
@@ -202,4 +202,4 @@ class MediaManager {
   }
 }
 
-module.exports = new MediaManager(); 
+module.exports = new MediaManager();

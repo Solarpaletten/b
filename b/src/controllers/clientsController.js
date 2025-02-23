@@ -1,4 +1,4 @@
-const prismaManager = require('../utils/create/prismaManager'); 
+const prismaManager = require('../utils/create/prismaManager');
 const { logger } = require('../config/logger');
 
 const getAllClients = async (req, res) => {
@@ -7,8 +7,8 @@ const getAllClients = async (req, res) => {
       where: { user_id: req.user.id },
       include: {
         sales: true,
-        purchases: true
-      }
+        purchases: true,
+      },
     });
     res.json(clients);
   } catch (error) {
@@ -23,18 +23,18 @@ const getClientById = async (req, res) => {
     const client = await prismaManager.prisma.clients.findFirst({
       where: {
         id: parseInt(id),
-        user_id: req.user.id
+        user_id: req.user.id,
       },
       include: {
         sales: true,
-        purchases: true
-      }
+        purchases: true,
+      },
     });
-    
+
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });
     }
-    
+
     res.json(client);
   } catch (error) {
     logger.error('Error fetching client:', error);
@@ -44,16 +44,8 @@ const getClientById = async (req, res) => {
 
 const createClient = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      type,
-      clientType,
-      code,
-      vat_code
-    } = req.body;
-    
+    const { name, email, phone, type, clientType, code, vat_code } = req.body;
+
     const client = await prismaManager.prisma.clients.create({
       data: {
         name,
@@ -64,10 +56,10 @@ const createClient = async (req, res) => {
         code,
         vat_code,
         user_id: req.user.id,
-        is_active: true
-      }
+        is_active: true,
+      },
     });
-    
+
     res.status(201).json(client);
   } catch (error) {
     logger.error('Error creating client:', error);
@@ -79,19 +71,19 @@ const updateClient = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    
+
     const client = await prismaManager.prisma.clients.updateMany({
       where: {
         id: parseInt(id),
-        user_id: req.user.id
+        user_id: req.user.id,
       },
-      data: updateData
+      data: updateData,
     });
-    
+
     if (client.count === 0) {
       return res.status(404).json({ error: 'Client not found' });
     }
-    
+
     res.json({ message: 'Client updated successfully' });
   } catch (error) {
     logger.error('Error updating client:', error);
@@ -102,12 +94,12 @@ const updateClient = async (req, res) => {
 const deleteClient = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const result = await prismaManager.prisma.clients.deleteMany({
       where: {
         id: parseInt(id),
-        user_id: req.user.id
-      }
+        user_id: req.user.id,
+      },
     });
 
     if (result.count === 0) {
@@ -126,5 +118,5 @@ module.exports = {
   getClientById, // Получение клиента по ID
   createClient, // Создание клиента
   updateClient, // Обновление клиента
-  deleteClient // Удаление клиента
+  deleteClient, // Удаление клиента
 };

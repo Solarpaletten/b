@@ -9,13 +9,17 @@ const auth = (req, res, next) => {
 
     if (!authHeader) {
       logger.error('Authorization header is missing');
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+      return res
+        .status(401)
+        .json({ error: 'Access denied. No token provided.' });
     }
 
     // Проверяем, начинается ли заголовок с "Bearer "
     if (!authHeader.startsWith('Bearer ')) {
       logger.error('Invalid token format. Expected "Bearer <token>"');
-      return res.status(401).json({ error: 'Invalid token format. Expected "Bearer <token>".' });
+      return res
+        .status(401)
+        .json({ error: 'Invalid token format. Expected "Bearer <token>".' });
     }
 
     // Извлекаем токен (убираем "Bearer ")
@@ -24,7 +28,9 @@ const auth = (req, res, next) => {
 
     if (!token) {
       logger.error('Token is missing after extraction');
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+      return res
+        .status(401)
+        .json({ error: 'Access denied. No token provided.' });
     }
 
     // Проверяем токен

@@ -18,8 +18,8 @@ async function getToken() {
     // Находим пользователя
     const user = await prisma.users.findUnique({
       where: {
-        email: 'solar@solar.pl'
-      }
+        email: 'solar@solar.pl',
+      },
     });
 
     if (!user) {
@@ -29,10 +29,10 @@ async function getToken() {
 
     // Генерируем JWT токен
     const token = jwt.sign(
-      { 
+      {
         id: user.id,
         email: user.email,
-        role: user.role 
+        role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -41,10 +41,11 @@ async function getToken() {
     console.log('\n✅ Токен успешно создан!\n');
     console.log('JWT_TOKEN=' + token);
     console.log('\n💡 Скопируйте эту строку в ваш .env файл');
-
   } catch (error) {
     if (error.name === 'PrismaClientInitializationError') {
-      console.error('❌ Ошибка подключения к базе данных. Проверьте DATABASE_URL в .env файле');
+      console.error(
+        '❌ Ошибка подключения к базе данных. Проверьте DATABASE_URL в .env файле'
+      );
     } else {
       console.error('❌ Ошибка при получении токена:', error);
     }

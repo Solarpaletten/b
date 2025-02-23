@@ -6,8 +6,8 @@ const emailConfig = {
     user: 'solarleanid@gmail.com',
     // Важно: для Gmail нужно использовать пароль приложения, а не обычный пароль аккаунта
     // Нужно включить двухфакторную аутентификацию и создать пароль приложения
-    pass: 'SolarLeanid@$'
-  }
+    pass: 'SolarLeanid@$',
+  },
 };
 
 const transporter = nodemailer.createTransport(emailConfig);
@@ -18,7 +18,7 @@ const sendEmail = async (to, subject, html) => {
       from: process.env.EMAIL_FROM || 'your-email@example.com',
       to,
       subject,
-      html
+      html,
     });
     return true;
   } catch (error) {
@@ -29,5 +29,5 @@ const sendEmail = async (to, subject, html) => {
 
 module.exports = {
   sendEmail,
-  transporter
-}; 
+  transporter,
+};

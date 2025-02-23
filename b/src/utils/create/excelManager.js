@@ -28,11 +28,11 @@ class ExcelManager {
 
       // Установка заголовков
       if (options.headers) {
-        worksheet.columns = options.headers.map(header => ({
+        worksheet.columns = options.headers.map((header) => ({
           header: header.label,
           key: header.key,
           width: header.width || 15,
-          style: header.style || { font: { bold: true } }
+          style: header.style || { font: { bold: true } },
         }));
       }
 
@@ -45,10 +45,10 @@ class ExcelManager {
       // Сохранение файла
       const filename = `${options.filename || 'report'}-${Date.now()}.xlsx`;
       const outputPath = path.join(this.outputDir, filename);
-      
+
       await workbook.xlsx.writeFile(outputPath);
       logger.info('Excel report created:', { path: outputPath });
-      
+
       return outputPath;
     } catch (error) {
       logger.error('Error creating Excel report:', error);
@@ -64,7 +64,7 @@ class ExcelManager {
       headerRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: styles.header.backgroundColor || 'FFE0E0E0' }
+        fgColor: { argb: styles.header.backgroundColor || 'FFE0E0E0' },
       };
     }
 
@@ -74,7 +74,9 @@ class ExcelManager {
           row.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: styles.alternateRows.backgroundColor || 'FFF5F5F5' }
+            fgColor: {
+              argb: styles.alternateRows.backgroundColor || 'FFF5F5F5',
+            },
           };
         }
       });
@@ -86,18 +88,19 @@ class ExcelManager {
     try {
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(filePath);
-      
+
       const result = [];
-      workbook.worksheets.forEach(worksheet => {
+      workbook.worksheets.forEach((worksheet) => {
         const sheetData = [];
         worksheet.eachRow((row, rowNumber) => {
-          if (rowNumber > 1) { // Пропускаем заголовки
+          if (rowNumber > 1) {
+            // Пропускаем заголовки
             sheetData.push(row.values.slice(1)); // Убираем пустой первый элемент
           }
         });
         result.push({
           name: worksheet.name,
-          data: sheetData
+          data: sheetData,
         });
       });
 
@@ -118,13 +121,16 @@ class ExcelManager {
       const pivotData = this.groupData(data, options);
 
       // Добавление заголовков
-      const headers = [options.rowField, ...new Set(data.map(item => item[options.columnField]))];
+      const headers = [
+        options.rowField,
+        ...new Set(data.map((item) => item[options.columnField])),
+      ];
       worksheet.addRow(headers);
 
       // Добавление данных
       Object.entries(pivotData).forEach(([rowValue, columns]) => {
         const row = [rowValue];
-        headers.slice(1).forEach(header => {
+        headers.slice(1).forEach((header) => {
           row.push(columns[header] || 0);
         });
         worksheet.addRow(row);
@@ -133,7 +139,7 @@ class ExcelManager {
       // Сохранение файла
       const filename = `pivot-${Date.now()}.xlsx`;
       const outputPath = path.join(this.outputDir, filename);
-      
+
       await workbook.xlsx.writeFile(outputPath);
       return outputPath;
     } catch (error) {
@@ -172,13 +178,13 @@ class ExcelManager {
         worksheet.addRow(options.headers);
       }
 
-      data.forEach(row => {
+      data.forEach((row) => {
         worksheet.addRow(row);
       });
 
       const filename = `export-${Date.now()}.csv`;
       const outputPath = path.join(this.outputDir, filename);
-      
+
       await workbook.csv.writeFile(outputPath);
       return outputPath;
     } catch (error) {
@@ -188,4 +194,4 @@ class ExcelManager {
   }
 }
 
-module.exports = new ExcelManager(); 
+module.exports = new ExcelManager();

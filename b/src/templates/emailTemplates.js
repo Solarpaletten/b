@@ -8,7 +8,7 @@ const emailTemplates = {
         <p>Спасибо за регистрацию в нашей системе.</p>
         <p>Для начала работы вам нужно подтвердить ваш email.</p>
       </div>
-    `
+    `,
   }),
 
   verifyEmail: (token) => ({
@@ -27,7 +27,7 @@ const emailTemplates = {
         <p>Если кнопка не работает, скопируйте эту ссылку в браузер:</p>
         <p>${process.env.APP_URL}/verify-email/${token}</p>
       </div>
-    `
+    `,
   }),
 
   resetPassword: (token) => ({
@@ -45,7 +45,7 @@ const emailTemplates = {
         </div>
         <p>Если вы не запрашивали сброс пароля, проигнорируйте это письмо.</p>
       </div>
-    `
+    `,
   }),
 
   companyCreated: (companyName) => ({
@@ -57,7 +57,7 @@ const emailTemplates = {
         <p>Этот процесс займет около 5 минут.</p>
         <p>Как только всё будет готово, мы отправим вам уведомление.</p>
       </div>
-    `
+    `,
   }),
 
   companyReady: (companyName) => ({
@@ -74,8 +74,8 @@ const emailTemplates = {
           </a>
         </div>
       </div>
-    `
-  })
+    `,
+  }),
 };
 
-module.exports = emailTemplates; 
+module.exports = emailTemplates;

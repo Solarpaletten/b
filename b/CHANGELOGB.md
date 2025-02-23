@@ -3,6 +3,7 @@
 ## Current Version (v0.1.0)
 
 ### Authentication ✅
+
 - User registration
 - Login system
 - Password reset
@@ -11,6 +12,7 @@
 - Test coverage complete
 
 ### Clients Module ✅
+
 - CRUD operations
 - API routes (/api/clients)
 - Test coverage
@@ -18,6 +20,7 @@
 - Authorization
 
 ### Infrastructure ✅
+
 - PostgreSQL setup
 - Prisma ORM
 - Project structure
@@ -28,6 +31,7 @@
 ## Next Steps (v0.2.0)
 
 ### Products Module (Next Priority)
+
 - [ ] Database model
 - [ ] CRUD API
 - [ ] Tests
@@ -35,6 +39,7 @@
 - [ ] Stock tracking
 
 ### Sales Module (Planned)
+
 - [ ] Database model
 - [ ] CRUD API
 - [ ] Client relationships
@@ -42,6 +47,7 @@
 - [ ] Reports
 
 ### Technical Tasks
+
 - [ ] API documentation
 - [ ] Performance optimization
 - [ ] Security enhancements

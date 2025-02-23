@@ -21,10 +21,10 @@ class ReportGenerator {
 
       // Установка заголовков
       if (options.headers) {
-        worksheet.columns = options.headers.map(header => ({
+        worksheet.columns = options.headers.map((header) => ({
           header: header.label,
           key: header.key,
-          width: header.width || 15
+          width: header.width || 15,
         }));
       }
 
@@ -33,15 +33,21 @@ class ReportGenerator {
 
       // Стилизация
       worksheet.getRow(1).font = { bold: true };
-      worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+      worksheet.getRow(1).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      };
 
       // Сохранение файла
-      const fileName = `${options.fileName || 'report'}-${dateManager.format(new Date(), 'YYYY-MM-DD-HHmmss')}.xlsx`;
+      const fileName = `${options.fileName || 'report'}-${dateManager.format(
+        new Date(),
+        'YYYY-MM-DD-HHmmss'
+      )}.xlsx`;
       const filePath = path.join(this.reportsDir, fileName);
-      
+
       await workbook.xlsx.writeFile(filePath);
       logger.info('Excel report generated:', { path: filePath });
-      
+
       return filePath;
     } catch (error) {
       logger.error('Error generating Excel report:', error);
@@ -54,30 +60,34 @@ class ReportGenerator {
     try {
       const doc = new PDFDocument({
         margin: 50,
-        size: options.size || 'A4'
+        size: options.size || 'A4',
       });
 
-      const fileName = `${options.fileName || 'report'}-${dateManager.format(new Date(), 'YYYY-MM-DD-HHmmss')}.pdf`;
+      const fileName = `${options.fileName || 'report'}-${dateManager.format(
+        new Date(),
+        'YYYY-MM-DD-HHmmss'
+      )}.pdf`;
       const filePath = path.join(this.reportsDir, fileName);
-      
+
       const stream = fs.createWriteStream(filePath);
       doc.pipe(stream);
 
       // Добавление заголовка
       if (options.title) {
-        doc.fontSize(20)
-           .text(options.title, { align: 'center' })
-           .moveDown();
+        doc.fontSize(20).text(options.title, { align: 'center' }).moveDown();
       }
 
       // Добавление даты
-      doc.fontSize(12)
-         .text(`Generated: ${dateManager.format(new Date(), 'YYYY-MM-DD HH:mm:ss')}`)
-         .moveDown();
+      doc
+        .fontSize(12)
+        .text(
+          `Generated: ${dateManager.format(new Date(), 'YYYY-MM-DD HH:mm:ss')}`
+        )
+        .moveDown();
 
       // Добавление данных
       if (Array.isArray(data)) {
-        data.forEach(item => {
+        data.forEach((item) => {
           Object.entries(item).forEach(([key, value]) => {
             doc.text(`${key}: ${value}`);
           });
@@ -103,7 +113,8 @@ class ReportGenerator {
   }
 
   // Очистка старых отчетов
-  async cleanupOldReports(maxAge = 7) { // maxAge в днях
+  async cleanupOldReports(maxAge = 7) {
+    // maxAge в днях
     try {
       const files = await fs.promises.readdir(this.reportsDir);
       const now = new Date();
@@ -125,4 +136,4 @@ class ReportGenerator {
   }
 }
 
-module.exports = new ReportGenerator(); 
+module.exports = new ReportGenerator();

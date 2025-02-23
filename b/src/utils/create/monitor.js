@@ -9,26 +9,26 @@ class SystemMonitor {
   getSystemInfo() {
     const uptime = process.uptime();
     const { heapUsed, heapTotal } = process.memoryUsage();
-    
+
     return {
       uptime: uptime,
       uptimeFormatted: this.formatUptime(uptime),
       memory: {
         heapUsed: this.formatBytes(heapUsed),
         heapTotal: this.formatBytes(heapTotal),
-        heapUsedPercentage: ((heapUsed / heapTotal) * 100).toFixed(2) + '%'
+        heapUsedPercentage: ((heapUsed / heapTotal) * 100).toFixed(2) + '%',
       },
       cpu: {
         cores: os.cpus().length,
         loadAvg: os.loadavg(),
-        model: os.cpus()[0].model
+        model: os.cpus()[0].model,
       },
       os: {
         platform: os.platform(),
         release: os.release(),
         totalMemory: this.formatBytes(os.totalmem()),
-        freeMemory: this.formatBytes(os.freemem())
-      }
+        freeMemory: this.formatBytes(os.freemem()),
+      },
     };
   }
 
@@ -37,7 +37,7 @@ class SystemMonitor {
     const hours = Math.floor((uptime % 86400) / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const seconds = Math.floor(uptime % 60);
-    
+
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   }
 
@@ -48,7 +48,8 @@ class SystemMonitor {
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
   }
 
-  startMonitoring(interval = 300000) { // По умолчанию каждые 5 минут
+  startMonitoring(interval = 300000) {
+    // По умолчанию каждые 5 минут
     setInterval(() => {
       const info = this.getSystemInfo();
       logger.info('System Monitor Report', info);
@@ -56,4 +57,4 @@ class SystemMonitor {
   }
 }
 
-module.exports = new SystemMonitor(); 
+module.exports = new SystemMonitor();

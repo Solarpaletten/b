@@ -8,8 +8,8 @@ class APIManager {
     this.client = axios.create({
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     // Добавляем перехватчики
@@ -26,7 +26,7 @@ class APIManager {
         logger.debug('API Request:', {
           requestId,
           method: config.method,
-          url: config.url
+          url: config.url,
         });
 
         return config;
@@ -42,7 +42,7 @@ class APIManager {
       (response) => {
         logger.debug('API Response:', {
           requestId: response.config.requestId,
-          status: response.status
+          status: response.status,
         });
         return response;
       },
@@ -50,7 +50,7 @@ class APIManager {
         logger.error('API Response Error:', {
           requestId: error.config?.requestId,
           error: error.message,
-          status: error.response?.status
+          status: error.response?.status,
         });
         return Promise.reject(error);
       }
@@ -73,7 +73,7 @@ class APIManager {
       }
 
       const response = await this.client.get(url, config);
-      
+
       // Кэшируем ответ
       if (!config.skipCache) {
         await redisManager.set(cacheKey, response.data, cacheTTL);
@@ -115,7 +115,7 @@ class APIManager {
   // Обработка ошибок
   handleError(error) {
     const apiError = new Error();
-    
+
     if (error.response) {
       // Ответ сервера с ошибкой
       apiError.status = error.response.status;
@@ -138,7 +138,7 @@ class APIManager {
   async batch(requests) {
     try {
       const responses = await Promise.all(
-        requests.map(request => {
+        requests.map((request) => {
           const method = request.method.toLowerCase();
           return this[method](request.url, request.data, request.config);
         })
@@ -155,11 +155,11 @@ class APIManager {
       return await fn();
     } catch (error) {
       if (retries === 0) throw error;
-      
-      await new Promise(resolve => setTimeout(resolve, delay));
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
       return this.retry(fn, retries - 1, delay * 2);
     }
   }
 }
 
-module.exports = new APIManager(); 
+module.exports = new APIManager();

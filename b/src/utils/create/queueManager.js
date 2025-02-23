@@ -55,10 +55,16 @@ class QueueManager {
         let reportPath;
         switch (type) {
           case 'excel':
-            reportPath = await reportGenerator.generateExcel(data.data, data.options);
+            reportPath = await reportGenerator.generateExcel(
+              data.data,
+              data.options
+            );
             break;
           case 'pdf':
-            reportPath = await reportGenerator.generatePDF(data.data, data.options);
+            reportPath = await reportGenerator.generatePDF(
+              data.data,
+              data.options
+            );
             break;
           default:
             throw new Error(`Unknown report type: ${type}`);
@@ -72,11 +78,13 @@ class QueueManager {
               to: data.email,
               subject: 'Your Report is Ready',
               text: 'Please find your report attached.',
-              attachments: [{
-                filename: reportPath.split('/').pop(),
-                path: reportPath
-              }]
-            }
+              attachments: [
+                {
+                  filename: reportPath.split('/').pop(),
+                  path: reportPath,
+                },
+              ],
+            },
           });
         }
 
@@ -93,7 +101,7 @@ class QueueManager {
 
       try {
         const backupPath = await backupManager.createDatabaseBackup();
-        
+
         // Отправка уведомления об успешном бэкапе
         if (process.env.ADMIN_EMAIL) {
           await this.addEmailJob({
@@ -101,8 +109,8 @@ class QueueManager {
             data: {
               to: process.env.ADMIN_EMAIL,
               subject: 'Database Backup Completed',
-              text: `Backup created successfully: ${backupPath}`
-            }
+              text: `Backup created successfully: ${backupPath}`,
+            },
           });
         }
 
@@ -114,19 +122,19 @@ class QueueManager {
     });
 
     // Обработка событий для всех очередей
-    [this.emailQueue, this.reportQueue, this.backupQueue].forEach(queue => {
+    [this.emailQueue, this.reportQueue, this.backupQueue].forEach((queue) => {
       queue.on('completed', (job) => {
-        logger.info(`Job completed:`, { 
-          queue: queue.name, 
-          id: job.id 
+        logger.info(`Job completed:`, {
+          queue: queue.name,
+          id: job.id,
         });
       });
 
       queue.on('failed', (job, err) => {
-        logger.error(`Job failed:`, { 
-          queue: queue.name, 
-          id: job.id, 
-          error: err.message 
+        logger.error(`Job failed:`, {
+          queue: queue.name,
+          id: job.id,
+          error: err.message,
         });
       });
     });
@@ -138,9 +146,9 @@ class QueueManager {
       attempts: 3,
       backoff: {
         type: 'exponential',
-        delay: 1000
+        delay: 1000,
       },
-      ...options
+      ...options,
     });
   }
 
@@ -148,16 +156,19 @@ class QueueManager {
   async addReportJob(data, options = {}) {
     return this.reportQueue.add(data, {
       attempts: 2,
-      ...options
+      ...options,
     });
   }
 
   // Добавление задачи в очередь бэкапов
   async addBackupJob(options = {}) {
-    return this.backupQueue.add({}, {
-      attempts: 3,
-      ...options
-    });
+    return this.backupQueue.add(
+      {},
+      {
+        attempts: 3,
+        ...options,
+      }
+    );
   }
 
   // Получение статистики очередей
@@ -166,7 +177,7 @@ class QueueManager {
     const stats = await Promise.all(
       queues.map(async (queue) => ({
         name: queue.name,
-        counts: await queue.getJobCounts()
+        counts: await queue.getJobCounts(),
       }))
     );
 
@@ -177,9 +188,9 @@ class QueueManager {
   async cleanCompletedJobs() {
     const queues = [this.emailQueue, this.reportQueue, this.backupQueue];
     await Promise.all(
-      queues.map(queue => queue.clean(24 * 3600 * 1000, 'completed'))
+      queues.map((queue) => queue.clean(24 * 3600 * 1000, 'completed'))
     );
   }
 }
 
-module.exports = new QueueManager(); 
+module.exports = new QueueManager();

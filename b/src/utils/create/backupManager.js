@@ -39,7 +39,7 @@ class BackupManager {
 
       // Создаем команду для pg_dump
       const command = `PGPASSWORD=${dbPass} pg_dump -h ${dbHost} -p ${dbPort} -U ${dbUser} -d ${dbName} -F p > ${filePath}`;
-      
+
       await execAsync(command);
       logger.info('Database backup created successfully:', { path: filePath });
 
@@ -63,7 +63,7 @@ class BackupManager {
       output.on('close', () => {
         logger.info('File compressed successfully:', {
           path: `${filePath}.zip`,
-          size: archive.pointer()
+          size: archive.pointer(),
         });
         resolve(`${filePath}.zip`);
       });
@@ -108,7 +108,8 @@ class BackupManager {
   }
 
   // Очистка старых бэкапов
-  async cleanupOldBackups(maxAge = 7) { // maxAge в днях
+  async cleanupOldBackups(maxAge = 7) {
+    // maxAge в днях
     try {
       const files = await fs.readdir(this.backupDir);
       const now = new Date();
@@ -130,4 +131,4 @@ class BackupManager {
   }
 }
 
-module.exports = new BackupManager(); 
+module.exports = new BackupManager();

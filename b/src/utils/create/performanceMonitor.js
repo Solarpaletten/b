@@ -10,7 +10,7 @@ class PerformanceMonitor {
       requests: new Map(),
       responses: new Map(),
       errors: new Map(),
-      dbQueries: new Map()
+      dbQueries: new Map(),
     };
 
     this.startTime = Date.now();
@@ -18,7 +18,8 @@ class PerformanceMonitor {
   }
 
   // Начало мониторинга
-  startMonitoring(interval = 60000) { // По умолчанию каждую минуту
+  startMonitoring(interval = 60000) {
+    // По умолчанию каждую минуту
     this.interval = setInterval(() => {
       this.collectMetrics();
     }, interval);
@@ -38,7 +39,7 @@ class PerformanceMonitor {
         timestamp: new Date(),
         system: await this.getSystemMetrics(),
         nodejs: this.getNodeMetrics(),
-        application: this.getApplicationMetrics()
+        application: this.getApplicationMetrics(),
       };
 
       logger.info('Performance metrics:', metrics);
@@ -67,16 +68,16 @@ class PerformanceMonitor {
     return {
       cpu: {
         loadAverage: loadAvg,
-        cores: os.cpus().length
+        cores: os.cpus().length,
       },
       memory: {
         total: this.formatBytes(totalMem),
         used: this.formatBytes(usedMem),
         free: this.formatBytes(freeMem),
-        usagePercent: ((usedMem / totalMem) * 100).toFixed(2)
+        usagePercent: ((usedMem / totalMem) * 100).toFixed(2),
       },
       disk: diskSpace,
-      uptime: os.uptime()
+      uptime: os.uptime(),
     };
   }
 
@@ -89,15 +90,15 @@ class PerformanceMonitor {
       heap: {
         total: this.formatBytes(heap.total_heap_size),
         used: this.formatBytes(heap.used_heap_size),
-        limit: this.formatBytes(heap.heap_size_limit)
+        limit: this.formatBytes(heap.heap_size_limit),
       },
       memory: {
         rss: this.formatBytes(memory.rss),
         heapTotal: this.formatBytes(memory.heapTotal),
         heapUsed: this.formatBytes(memory.heapUsed),
-        external: this.formatBytes(memory.external)
+        external: this.formatBytes(memory.external),
       },
-      eventLoop: process.eventLoop?.metrics?.() || {}
+      eventLoop: process.eventLoop?.metrics?.() || {},
     };
   }
 
@@ -108,7 +109,7 @@ class PerformanceMonitor {
       responses: this.summarizeMetrics(this.metrics.responses),
       errors: this.summarizeMetrics(this.metrics.errors),
       dbQueries: this.summarizeMetrics(this.metrics.dbQueries),
-      uptime: Math.floor((Date.now() - this.startTime) / 1000)
+      uptime: Math.floor((Date.now() - this.startTime) / 1000),
     };
   }
 
@@ -125,7 +126,7 @@ class PerformanceMonitor {
     const summary = {
       total: 0,
       lastMinute: 0,
-      lastHour: 0
+      lastHour: 0,
     };
 
     const now = Date.now();
@@ -158,4 +159,4 @@ class PerformanceMonitor {
   }
 }
 
-module.exports = new PerformanceMonitor(); 
+module.exports = new PerformanceMonitor();

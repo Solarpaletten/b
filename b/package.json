@@ -5,6 +5,10 @@
   "main": "src/index.js",
   "proxy": "http://localhost:4000",
   "scripts": {
+    "edit:auth": "code -r src/controllers/authController.js src/routes/authRoutes.js",
+    "edit:validate": "code -r src/controllers/authController.js -g validateToken",
+    "format": "prettier --write \"**/*.{js,ts,jsx,tsx,json,css}\"",
+    "check-format": "prettier --check \"**/*.{js,ts,jsx,tsx,json,css}\"",
     "prepare": "exit 0",
     "pretest": "rm -rf logs && mkdir -p logs",
     "test": "jest --forceExit --detectOpenHandles",
@@ -26,7 +30,6 @@
     "version:major": "node scripts/version-control.js major",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"**/*.{js,json,md,prisma}\"",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --runInBand",

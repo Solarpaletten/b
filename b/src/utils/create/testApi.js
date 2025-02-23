@@ -8,13 +8,13 @@ async function testEndpoint(name, url) {
   try {
     console.log(`\n=== Тестирование ${name} ===`);
     const headers = {
-      'Authorization': `Bearer ${TOKEN}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json',
     };
-    
+
     console.log(`Запрос к: ${url}`);
     console.log('Заголовок Authorization:', headers.Authorization);
-    
+
     const response = await axios.get(url, { headers });
     console.log('Статус ответа:', response.status);
     console.log('Данные:', JSON.stringify(response.data, null, 2));
@@ -43,7 +43,7 @@ async function testApi() {
 
   console.log('\n=== Начало тестирования API ===\n');
   console.log('Используется токен:', TOKEN.substring(0, 20) + '...');
-  
+
   const endpoints = [
     { name: 'Статус системы', url: `${API_URL}/system-status` },
     { name: 'Клиенты', url: `${API_URL}/clients` },
@@ -51,7 +51,7 @@ async function testApi() {
     { name: 'Продажи', url: `${API_URL}/sales` },
     { name: 'Закупки', url: `${API_URL}/purchases` },
     { name: 'Банковские операции', url: `${API_URL}/bank-operations` },
-    { name: 'Акты сверки', url: `${API_URL}/doc-settlements` }
+    { name: 'Акты сверки', url: `${API_URL}/doc-settlements` },
   ];
 
   let successCount = 0;

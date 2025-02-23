@@ -2,7 +2,7 @@ const emailService = require('../services/emailService');
 
 async function testAllTemplates() {
   const testEmail = 'solarleanid@gmail.com';
-  
+
   console.log('Начинаем тестирование email отправки...');
 
   try {
@@ -16,18 +16,12 @@ async function testAllTemplates() {
 
     // Тест 2: Временный пароль
     console.log('\nТест 2: Отправка временного пароля...');
-    await emailService.sendTemporaryPassword(
-      testEmail,
-      'pass123'
-    );
+    await emailService.sendTemporaryPassword(testEmail, 'pass123');
     console.log('✓ Письмо с паролем отправлено');
 
     // Тест 3: Создание компании
     console.log('\nТест 3: Уведомление о создании компании...');
-    await emailService.sendCompanyCreatedEmail(
-      testEmail,
-      'Тестовая Компания'
-    );
+    await emailService.sendCompanyCreatedEmail(testEmail, 'Тестовая Компания');
     console.log('✓ Письмо о создании компании отправлено');
 
     console.log('\nВсе тесты выполнены успешно!');
@@ -36,4 +30,4 @@ async function testAllTemplates() {
   }
 }
 
-testAllTemplates(); 
+testAllTemplates();

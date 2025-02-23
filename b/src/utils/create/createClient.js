@@ -13,10 +13,10 @@ async function createClient() {
         code: 'TEST001',
         vat_code: 'VAT123456',
         user_id: 1, // ID нашего админа
-        is_active: true // Boolean вместо строки
-      }
+        is_active: true, // Boolean вместо строки
+      },
     });
-    
+
     console.log('Создан новый клиент:', newClient);
   } catch (error) {
     console.error('Ошибка при создании клиента:', error);
@@ -32,4 +32,4 @@ async function createClient() {
   }
 }
 
-createClient(); 
+createClient();

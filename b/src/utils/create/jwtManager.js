@@ -14,7 +14,7 @@ class JWTManager {
   generateAccessToken(payload) {
     try {
       return jwt.sign(payload, this.accessTokenSecret, {
-        expiresIn: this.accessTokenExpiry
+        expiresIn: this.accessTokenExpiry,
       });
     } catch (error) {
       logger.error('Error generating access token:', error);
@@ -26,7 +26,7 @@ class JWTManager {
   generateRefreshToken(payload) {
     try {
       const refreshToken = jwt.sign(payload, this.refreshTokenSecret, {
-        expiresIn: this.refreshTokenExpiry
+        expiresIn: this.refreshTokenExpiry,
       });
 
       // Сохраняем refresh token в Redis
@@ -86,7 +86,9 @@ class JWTManager {
   async refreshTokens(refreshToken) {
     try {
       const decoded = jwt.verify(refreshToken, this.refreshTokenSecret);
-      const storedToken = await redisManager.get(`refresh_token:${decoded.userId}`);
+      const storedToken = await redisManager.get(
+        `refresh_token:${decoded.userId}`
+      );
 
       if (refreshToken !== storedToken) {
         throw new Error('Invalid refresh token');
@@ -94,17 +96,17 @@ class JWTManager {
 
       const accessToken = this.generateAccessToken({
         userId: decoded.userId,
-        role: decoded.role
+        role: decoded.role,
       });
 
       const newRefreshToken = this.generateRefreshToken({
         userId: decoded.userId,
-        role: decoded.role
+        role: decoded.role,
       });
 
       return {
         accessToken,
-        refreshToken: newRefreshToken
+        refreshToken: newRefreshToken,
       };
     } catch (error) {
       logger.error('Error refreshing tokens:', error);
@@ -123,13 +125,13 @@ class JWTManager {
 
         const token = authHeader.split(' ')[1];
         const decoded = this.verifyAccessToken(token);
-        
+
         req.user = decoded;
         next();
       } catch (error) {
         res.status(401).json({
           error: 'Authentication failed',
-          message: error.message
+          message: error.message,
         });
       }
     };
@@ -151,11 +153,11 @@ class JWTManager {
       } catch (error) {
         res.status(403).json({
           error: 'Authorization failed',
-          message: error.message
+          message: error.message,
         });
       }
     };
   }
 }
 
-module.exports = new JWTManager(); 
+module.exports = new JWTManager();

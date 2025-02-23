@@ -17,28 +17,28 @@ class ErrorHandler {
     this.errorTypes = {
       VALIDATION_ERROR: {
         statusCode: 400,
-        code: 'VALIDATION_ERROR'
+        code: 'VALIDATION_ERROR',
       },
       AUTHENTICATION_ERROR: {
         statusCode: 401,
-        code: 'AUTHENTICATION_ERROR'
+        code: 'AUTHENTICATION_ERROR',
       },
       AUTHORIZATION_ERROR: {
         statusCode: 403,
-        code: 'AUTHORIZATION_ERROR'
+        code: 'AUTHORIZATION_ERROR',
       },
       NOT_FOUND: {
         statusCode: 404,
-        code: 'NOT_FOUND'
+        code: 'NOT_FOUND',
       },
       CONFLICT: {
         statusCode: 409,
-        code: 'CONFLICT'
+        code: 'CONFLICT',
       },
       RATE_LIMIT_ERROR: {
         statusCode: 429,
-        code: 'RATE_LIMIT_ERROR'
-      }
+        code: 'RATE_LIMIT_ERROR',
+      },
     };
   }
 
@@ -49,7 +49,11 @@ class ErrorHandler {
       throw new Error(`Unknown error type: ${type}`);
     }
 
-    const error = new AppError(message, errorConfig.statusCode, errorConfig.code);
+    const error = new AppError(
+      message,
+      errorConfig.statusCode,
+      errorConfig.code
+    );
     if (details) {
       error.details = details;
     }
@@ -62,7 +66,7 @@ class ErrorHandler {
       error: err.message,
       stack: err.stack,
       code: err.code,
-      statusCode: err.statusCode
+      statusCode: err.statusCode,
     });
 
     // Если это операционная ошибка (ожидаемая)
@@ -71,7 +75,7 @@ class ErrorHandler {
         status: err.status,
         code: err.code,
         message: err.message,
-        details: err.details || null
+        details: err.details || null,
       });
     }
 
@@ -81,7 +85,7 @@ class ErrorHandler {
         status: 'error',
         code: 'INTERNAL_ERROR',
         message: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
     }
 
@@ -89,7 +93,7 @@ class ErrorHandler {
     return res.status(500).json({
       status: 'error',
       code: 'INTERNAL_ERROR',
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 
@@ -103,5 +107,5 @@ class ErrorHandler {
 
 module.exports = {
   AppError,
-  ErrorHandler: new ErrorHandler()
-}; 
+  ErrorHandler: new ErrorHandler(),
+};

@@ -2,7 +2,7 @@ const emailService = require('../services/emailService');
 
 async function runTest() {
   console.log('Начинаем тестирование email системы...');
-  
+
   // Проверяем соединение
   const isConnected = await emailService.testConnection();
   if (!isConnected) {
@@ -19,4 +19,4 @@ async function runTest() {
   }
 }
 
-runTest(); 
+runTest();

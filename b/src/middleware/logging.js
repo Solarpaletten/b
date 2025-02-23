@@ -15,5 +15,5 @@ const errorLogger = (error, req, res, next) => {
 
 module.exports = {
   logger,
-  errorLogger
-}; 
+  errorLogger,
+};

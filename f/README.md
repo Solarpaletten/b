@@ -47,8 +47,4 @@ export default tseslint.config({
     ...react.configs['jsx-runtime'].rules,
   },
 })
-
-git commit -m "Fixed CORS misconfiguration 🎯: updated allowed origins to match correct API domain 🚀"
-
-
 ```

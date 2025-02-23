@@ -22,8 +22,8 @@ class NeuralManager {
   createSequentialModel(layers) {
     try {
       const model = tf.sequential();
-      
-      layers.forEach(layer => {
+
+      layers.forEach((layer) => {
         model.add(tf.layers[layer.type](layer.config));
       });
 
@@ -40,7 +40,7 @@ class NeuralManager {
       model.compile({
         optimizer: config.optimizer || 'adam',
         loss: config.loss || 'meanSquaredError',
-        metrics: config.metrics || ['accuracy']
+        metrics: config.metrics || ['accuracy'],
       });
       return model;
     } catch (error) {
@@ -53,20 +53,16 @@ class NeuralManager {
   async trainModel(model, data, config) {
     try {
       const { x, y } = data;
-      const history = await model.fit(
-        tf.tensor(x),
-        tf.tensor(y),
-        {
-          epochs: config.epochs || 10,
-          batchSize: config.batchSize || 32,
-          validationSplit: config.validationSplit || 0.2,
-          callbacks: {
-            onEpochEnd: (epoch, logs) => {
-              logger.info('Training epoch:', { epoch, ...logs });
-            }
-          }
-        }
-      );
+      const history = await model.fit(tf.tensor(x), tf.tensor(y), {
+        epochs: config.epochs || 10,
+        batchSize: config.batchSize || 32,
+        validationSplit: config.validationSplit || 0.2,
+        callbacks: {
+          onEpochEnd: (epoch, logs) => {
+            logger.info('Training epoch:', { epoch, ...logs });
+          },
+        },
+      });
       return history;
     } catch (error) {
       logger.error('Error training model:', error);
@@ -117,7 +113,8 @@ class NeuralManager {
       let processedData = tf.tensor(data);
 
       if (config.normalize) {
-        processedData = processedData.sub(processedData.min())
+        processedData = processedData
+          .sub(processedData.min())
           .div(processedData.max().sub(processedData.min()));
       }
 
@@ -141,7 +138,7 @@ class NeuralManager {
       const evaluation = await model.evaluate(tf.tensor(x), tf.tensor(y));
       const metrics = model.metrics.map((metric, i) => ({
         name: metric,
-        value: evaluation[i].dataSync()[0]
+        value: evaluation[i].dataSync()[0],
       }));
       return metrics;
     } catch (error) {
@@ -151,4 +148,4 @@ class NeuralManager {
   }
 }
 
-module.exports = new NeuralManager(); 
+module.exports = new NeuralManager();

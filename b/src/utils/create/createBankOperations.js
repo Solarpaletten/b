@@ -7,20 +7,20 @@ async function createBankOperations() {
       {
         date: new Date('2025-01-26'),
         description: 'Initial bank deposit',
-        amount: 10000.00,
+        amount: 10000.0,
         type: 'credit',
         account_id: 2, // Bank Account (1100)
         user_id: 1,
-        client_id: 1
+        client_id: 1,
       },
       {
         date: new Date('2025-01-26'),
         description: 'Payment for solar panels',
-        amount: 2999.90,
+        amount: 2999.9,
         type: 'credit',
         account_id: 2, // Bank Account (1100)
         user_id: 1,
-        client_id: 1
+        client_id: 1,
       },
       {
         date: new Date('2025-01-26'),
@@ -29,17 +29,16 @@ async function createBankOperations() {
         type: 'credit',
         account_id: 2, // Bank Account (1100)
         user_id: 1,
-        client_id: 1
-      }
+        client_id: 1,
+      },
     ];
 
     for (const operation of operations) {
       const newOperation = await prisma.bank_operations.create({
-        data: operation
+        data: operation,
       });
       console.log('Создана новая банковская операция:', newOperation);
     }
-
   } catch (error) {
     console.error('Ошибка при создании банковских операций:', error);
   } finally {
@@ -47,4 +46,4 @@ async function createBankOperations() {
   }
 }
 
-createBankOperations(); 
+createBankOperations();

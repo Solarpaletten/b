@@ -11,41 +11,41 @@ class EmailManager {
       secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+        pass: process.env.SMTP_PASS,
+      },
     });
 
     this.email = new Email({
       message: {
-        from: process.env.SMTP_FROM
+        from: process.env.SMTP_FROM,
       },
       transport: this.transporter,
       views: {
         root: path.join(process.cwd(), 'src', 'templates', 'email'),
         options: {
-          extension: 'ejs'
-        }
+          extension: 'ejs',
+        },
       },
-      preview: process.env.NODE_ENV === 'development'
+      preview: process.env.NODE_ENV === 'development',
     });
 
     this.templates = {
       welcome: {
         subject: 'Welcome to our platform!',
-        template: 'welcome'
+        template: 'welcome',
       },
       resetPassword: {
         subject: 'Password Reset Request',
-        template: 'reset-password'
+        template: 'reset-password',
       },
       invoice: {
         subject: 'New Invoice',
-        template: 'invoice'
+        template: 'invoice',
       },
       report: {
         subject: 'Your Report',
-        template: 'report'
-      }
+        template: 'report',
+      },
     };
   }
 
@@ -61,17 +61,17 @@ class EmailManager {
         template: template.template,
         message: {
           to,
-          subject: template.subject
+          subject: template.subject,
         },
         locals: {
           ...data,
-          year: new Date().getFullYear()
-        }
+          year: new Date().getFullYear(),
+        },
       });
 
       logger.info('Email sent successfully:', {
         to,
-        template: templateName
+        template: templateName,
       });
 
       return result;
@@ -89,7 +89,7 @@ class EmailManager {
         to,
         subject,
         text,
-        html: html || text
+        html: html || text,
       });
 
       logger.info('Simple email sent successfully:', { to, subject });
@@ -108,13 +108,13 @@ class EmailManager {
         to,
         subject,
         text,
-        attachments
+        attachments,
       });
 
       logger.info('Email with attachments sent successfully:', {
         to,
         subject,
-        attachments: attachments.map(a => a.filename)
+        attachments: attachments.map((a) => a.filename),
       });
 
       return result;
@@ -140,7 +140,7 @@ class EmailManager {
   async sendVerificationEmail(email, token) {
     try {
       const verificationUrl = `${process.env.APP_URL}/verify-email/${token}`;
-      
+
       await this.transporter.sendMail({
         from: process.env.SMTP_FROM,
         to: email,
@@ -150,7 +150,7 @@ class EmailManager {
           <p>Please verify your email by clicking the link below:</p>
           <a href="${verificationUrl}">Verify Email</a>
           <p>This link will expire in 24 hours.</p>
-        `
+        `,
       });
 
       logger.info('Verification email sent:', { email });
@@ -164,7 +164,7 @@ class EmailManager {
   async sendPasswordResetEmail(email, token) {
     try {
       const resetUrl = `${process.env.APP_URL}/reset-password/${token}`;
-      
+
       await this.transporter.sendMail({
         from: process.env.SMTP_FROM,
         to: email,
@@ -175,7 +175,7 @@ class EmailManager {
           <a href="${resetUrl}">Reset Password</a>
           <p>This link will expire in 1 hour.</p>
           <p>If you didn't request this, please ignore this email.</p>
-        `
+        `,
       });
 
       logger.info('Password reset email sent:', { email });
@@ -192,7 +192,7 @@ class EmailManager {
         from: process.env.SMTP_FROM,
         to: email,
         subject,
-        html: message
+        html: message,
       });
 
       logger.info('Notification email sent:', { email, subject });
@@ -203,4 +203,4 @@ class EmailManager {
   }
 }
 
-module.exports = new EmailManager(); 
+module.exports = new EmailManager();

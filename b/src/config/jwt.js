@@ -4,11 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = '24h';
 
 const generateToken = (userId, role) => {
-  return jwt.sign(
-    { userId, role },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
-  );
+  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
 const verifyToken = (token) => {
@@ -23,5 +19,5 @@ module.exports = {
   generateToken,
   verifyToken,
   JWT_SECRET,
-  JWT_EXPIRES_IN
-}; 
+  JWT_EXPIRES_IN,
+};

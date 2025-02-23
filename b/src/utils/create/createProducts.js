@@ -11,7 +11,7 @@ async function createProducts() {
         unit: 'pcs',
         price: 299.99,
         currency: 'EUR',
-        user_id: 1
+        user_id: 1,
       },
       {
         code: 'PROD002',
@@ -20,7 +20,7 @@ async function createProducts() {
         unit: 'pcs',
         price: 899.99,
         currency: 'EUR',
-        user_id: 1
+        user_id: 1,
       },
       {
         code: 'PROD003',
@@ -29,17 +29,16 @@ async function createProducts() {
         unit: 'pcs',
         price: 2499.99,
         currency: 'EUR',
-        user_id: 1
-      }
+        user_id: 1,
+      },
     ];
 
     for (const product of products) {
       const newProduct = await prisma.products.create({
-        data: product
+        data: product,
       });
       console.log('Создан новый продукт:', newProduct);
     }
-
   } catch (error) {
     console.error('Ошибка при создании продуктов:', error);
   } finally {
@@ -47,4 +46,4 @@ async function createProducts() {
   }
 }
 
-createProducts(); 
+createProducts();
