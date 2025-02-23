@@ -1,3 +1,4 @@
+// /f/src/pages/clients/DashboardPage.tsx
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getClients,
@@ -19,6 +20,7 @@ export default function DashboardPage() {
     queryKey: ['clients'],
     queryFn: getClients,
   });
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState<number | null>(null);
   const [selectedClient, setSelectedClient] = useState<any>(null);

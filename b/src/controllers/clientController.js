@@ -1,11 +1,11 @@
-// backend/controllers/clientController.js
+// /b/controllers/clientController.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.getClients = async (req, res) => {
   try {
     const clients = await prisma.clients.findMany({
-      include: { users: true }, // Включаем связанных пользователей, если нужно
+      include: { users: true },
     });
     res.json(clients);
   } catch (error) {
